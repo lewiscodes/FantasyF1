@@ -1,0 +1,22 @@
+{
+  "name": "FantasyF1",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lewjt/FantasyF1.git"
+  },
+  "author": "Lewis Turner",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/lewjt/FantasyF1/issues"
+  },
+  "homepage": "https://github.com/lewjt/FantasyF1",
+  "dependencies": {
+    "express": "^4.15.2"
+  }
+}
