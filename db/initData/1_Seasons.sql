@@ -1,0 +1,1 @@
+INSERT INTO Seasons VALUES (?);
