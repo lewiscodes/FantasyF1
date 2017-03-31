@@ -42,6 +42,10 @@ function initData() {
             json = json[Object.keys(json)[0]];
 
             for (var x=1; x<=Object.keys(json).length; x++) {
+              var argumentArray = [];
+              for (var y=1; y <= numOfParams; y++) {
+
+              }
               console.log(json[x]);
               // var id = json.score[x]["id"];
               // var description = json.score[x]["description"];
