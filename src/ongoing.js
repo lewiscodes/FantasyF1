@@ -31,8 +31,20 @@ function processRaces() {
 
   fs.readdir(path, function(err, files) {
     files.forEach(function(file) {
+      var sqlAllFile = "3_AllRaces.sql";
+      var sqlfile = "3_SeasonRaces.sql";
       if (file.indexOf(".json") > -1) {
-        var sqlFile = file.replace('.json','') + ".sql";
+        fs.readFile(path + file, "utf-8", function(err, string) {
+          var json = JSON.parse(string)
+          // console.log(json.Races);
+          for(var x in json.Races) {
+            var sqlString = "SELECT * FROM Races_All WHERE RaceName = '" + json.Races[x].raceName + "' AND CircuitID = '" + json.Races[x].Circuit.circuitId + "'";
+            db.each(sqlString, function(err, row) {
+              console.log(err);
+              console.log(row);
+            });
+          }
+        });
       }
     });
   });

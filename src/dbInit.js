@@ -10,9 +10,8 @@ if (fs.existsSync(dbFile) === false) {
   // only runs if there is no DB file
   initDB();
   getSeasons();
-  setSeasons();
   initData();
-  db.close();
+  setSeasons();
 }
 
 function initDB() {
@@ -67,5 +66,13 @@ function getSeasons() {
 }
 
 function setSeasons() {
-  db.run("UPDATE Seasons SET FantasySeason = 1 WHERE SeasonID >= '2016'");
+  var error = true;
+  // while (error === true) {
+  for (var x=0; x< 1000; x++) {
+    db.each("SELECT * FROM Seasons", function(err, row) {
+      console.log(x + " : " + err);
+      // console.log(row);
+      // db.run("UPDATE Seasons SET FantasySeason = 1 WHERE SeasonID >= '2016'");
+    });
+  }
 }

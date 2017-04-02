@@ -1,1 +1,1 @@
-CREATE TABLE Drivers_All (DriverID PRIMARY KEY, SeasonID TEXT, TeamID TEXT);
+CREATE TABLE Drivers (DriverID PRIMARY KEY, SeasonID TEXT, TeamID TEXT);
