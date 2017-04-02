@@ -1,5 +1,4 @@
 var request = require('request');
-
 var fs = require("fs");
 var dbFile = "./db/FantasyF1.db";
 var sqlite3 = require("sqlite3").verbose();
@@ -13,7 +12,7 @@ if (fs.existsSync(dbFile) === false) {
   getSeasons();
   setSeasons();
   initData();
-  // db.close();
+  db.close();
 }
 
 function initDB() {

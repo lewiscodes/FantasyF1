@@ -1,0 +1,1 @@
+INSERT INTO Races_All VALUES (?, ?, ?, ?, ?);
