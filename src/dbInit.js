@@ -5,16 +5,16 @@ var dbFile = "./db/FantasyF1.db";
 var sqlite3 = require("sqlite3").verbose();
 var db = new sqlite3.Database(dbFile);
 var API_URL = "http://ergast.com/api/f1/";
+var API_URL_END = ".json?limit=1000";
 
 if (fs.existsSync(dbFile) === false) {
   // only runs if there is no DB file
   initDB();
+  getSeasons();
+  setSeasons();
   initData();
   // db.close();
 }
-
-getSeasons();
-initData();
 
 function initDB() {
   // gets each sql file and executes it to create DB tables
@@ -60,9 +60,13 @@ function initData() {
 }
 
 function getSeasons() {
-  request(API_URL + "seasons.json?limit=1000", function(error, response, body) {
+  request(API_URL + "seasons" + API_URL_END, function(error, response, body) {
     var json = JSON.parse(body);
     json = JSON.stringify(json.MRData.SeasonTable);
     fs.writeFile("./db/initData/1_Seasons.json", json);
-  })
+  });
+}
+
+function setSeasons() {
+  db.run("UPDATE Seasons SET FantasySeason = 1 WHERE SeasonID >= '2016'");
 }

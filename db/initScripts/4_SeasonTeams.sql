@@ -1,0 +1,1 @@
+CREATE TABLE Teams (TeamID PRIMARY KEY, SeasonID INT);

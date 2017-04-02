@@ -1,1 +1,1 @@
-CREATE TABLE Seasons (SeasonID PRIMARY KEY)
+CREATE TABLE Seasons (SeasonID PRIMARY KEY, FantasySeason INT)

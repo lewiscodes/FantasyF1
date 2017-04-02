@@ -1,1 +1,1 @@
-INSERT INTO Seasons VALUES (?);
+INSERT INTO Seasons (SeasonID, FantasySeason) VALUES (?, 0);

@@ -1,0 +1,1 @@
+CREATE TABLE Races (RaceID PRIMARY KEY, SeasonID INT, RaceDate TEXT, RaceTime TEXT);
