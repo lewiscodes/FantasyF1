@@ -30,28 +30,27 @@ function initDB() {
 
 function initData() {
   var path = "./db/initData/";
+  // gets json files and finds associated sql file
   fs.readdir(path, function(err, files) {
     files.forEach(function(file) {
       if (file.indexOf(".json") > -1) {
         fs.readFile(path + file, "utf-8", function(err, string) {
           var json = JSON.parse(string);
           var sqlFile = file.replace(".json",".sql");
+          // gets the number of params required by the sql file
           fs.readFile(path + sqlFile, "utf-8", function(err, sqlString) {
             var numOfParams = sqlString.match(new RegExp("\\?", "g") || []).length;
-            // var stmt = db.prepare(sqlString);
+            var stmt = db.prepare(sqlString);
             json = json[Object.keys(json)[0]];
-
-            for (var x=1; x<=Object.keys(json).length; x++) {
+            // gets the first x keys from json; where x is the number of params required
+            for(var x in json) {
               var argumentArray = [];
-              for (var y=1; y <= numOfParams; y++) {
-
+              // create a data array for each data object in json and pass it to sql query
+              for (var y=0; y < numOfParams; y++) {
+                var keyName = Object.keys(json[x])[y]
+                argumentArray.push(json[x][keyName]);
               }
-              console.log(json[x]);
-              // var id = json.score[x]["id"];
-              // var description = json.score[x]["description"];
-              // var score = json.score[x]["score"];
-              //
-              // stmt.run(id, description, score);
+              stmt.run(argumentArray);
             }
           });
         });
