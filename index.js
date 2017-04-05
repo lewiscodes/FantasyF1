@@ -1,6 +1,5 @@
 var express = require('express');
-var dbInit = require('./src/dbInit.js');
-var ongoing = require('./src/ongoing.js');
+var appJS = require('./src/app.js');
 var app = express();
 var port = 5000;
 var API_URL = "http://ergast.com/api/f1/";

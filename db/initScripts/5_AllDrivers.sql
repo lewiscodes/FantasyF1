@@ -1,1 +1,1 @@
-CREATE TABLE Drivers_All (DriverID PRIMARY KEY, DriverName TEXT, Nationality TEXT, DOB TEXT);
+CREATE TABLE Drivers_All (DriverID INTEGER PRIMARY KEY AUTOINCREMENT, DriverName TEXT, Nationality TEXT, DOB TEXT);
