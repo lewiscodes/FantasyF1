@@ -20,3 +20,5 @@ module.exports.getDateTime = function(calledFrom) {
 
   console.log(calledFrom + " executed: " + year + ":" + month + ":" + day + ":" + hour + ":" + min + ":" + sec);
 }
+
+module.exports.online = false;
