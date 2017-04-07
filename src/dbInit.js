@@ -14,12 +14,12 @@ module.exports.initDB = function() {
       files.forEach(function(file) {
         fs.readFile(scriptPath + file, "utf-8", function(err, script) {
           sqlite.db.run(script, function(err, row) {
-            if(err) {
-              reject(err);
+            if(err || row === undefined) {
+              return reject(err);
             } else {
               x++;
               if (x === files.length) {
-                resolve("success");
+                return resolve("success");
               }
             }
           });
@@ -33,18 +33,19 @@ module.exports.getSeasons = function() {
   return new Promise(function(resolve, reject) {
     if (utils.online === false) {
       // bypass getting data if no internet
-      resolve("success");
+      return resolve("success");
     }
 
+    // gets seasons data form API and saves it to file.
     request(API_URL + "seasons" + API_URL_END, function(error, response, body) {
       if (error) {
-        reject(error);
+        return reject(error);
       } else {
         var json = JSON.parse(body);
         json = JSON.stringify(json.MRData.SeasonTable);
         fs.writeFile("./db/initData/1_Seasons.json", json);
         utils.getDateTime("getSeasons");
-        resolve("success");
+        return resolve("success");
       }
     });
   });
@@ -74,13 +75,14 @@ module.exports.initData = function() {
                   var keyName = Object.keys(json[x])[y]
                   argumentArray.push(json[x][keyName]);
                 }
+                // execute the sql query
                 stmt.run(argumentArray, function(err, row) {
-                  if (err) {
-                    reject(err);
+                  if (err || row === undefined) {
+                    return reject(err);
                   } else {
                     numOfFiles++;
                     if(numOfFiles === files.length) {
-                      resolve("success");
+                      return resolve("success");
                     }
                   }
                 });
@@ -94,12 +96,13 @@ module.exports.initData = function() {
 }
 
 module.exports.setSeasons = function() {
+  // sets all seasons after 2015 to fatasy seasons
   return new Promise(function(resolve, reject) {
-    sqlite.db.run("UPDATE Seasons SET FantasySeason = 1 WHERE SeasonID >= '2016'", function(err, row) {
+    sqlite.db.exec("UPDATE Seasons SET FantasySeason = 1 WHERE SeasonID >= 2016", function(err) {
       if (err) {
-        reject(err);
+        return reject(err);
       } else {
-        resolve("success");
+        return resolve("success");
       }
     });
   });

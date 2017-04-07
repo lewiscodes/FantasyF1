@@ -1,1 +1,1 @@
-INSERT INTO Seasons (SeasonID, FantasySeason) VALUES (?, 0);
+INSERT INTO Seasons (SeasonID, FantasySeason, RacesProcessed) VALUES (?, 0, 0);

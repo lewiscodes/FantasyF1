@@ -3,8 +3,9 @@ var dbInit = require('./dbInit.js');
 var ongoing = require('./ongoing.js');
 var utils = require('./utils.js');
 
+// tests to see if DB has any data; runs dbInit functions if yes; runs executeOngoing if no
 sqlite.db.each("SELECT count(*) FROM Seasons", function(err, row) {
-  if (err) {
+  if (err || row === undefined) {
     dbInit.initDB().then(function(success) {
       utils.getDateTime("initDB");
       dbInit.getSeasons().then(function(success) {
@@ -14,6 +15,7 @@ sqlite.db.each("SELECT count(*) FROM Seasons", function(err, row) {
           dbInit.setSeasons().then(function(success) {
             utils.getDateTime("setSeasons");
             executeOngoing();
+            // runOngoing();
           }).catch(function(fail) {
             console.log(fail);
           });
@@ -28,19 +30,26 @@ sqlite.db.each("SELECT count(*) FROM Seasons", function(err, row) {
     });
   } else {
     executeOngoing();
+    // runOngoing();
   }
 });
 
 function executeOngoing(num) {
   ongoing.getRaces().then(function(success) {
     utils.getDateTime("getRaces");
-    ongoing.processRaces().then(function(success) {
-      console.log("success");
-    }).catch(function(fail) {
-      console.log(fail);
+    ongoing.processSeasonRaces().then(function(success) {
+      utils.getDateTime("processRaces");
+    }).catch(function(err) {
+      console.log(err);
     });
   }).catch(function(fail) {
     console.log(fail);
   });
-  // ongoing.processRaces();
+}
+
+function runOngoing() {
+  // 5 minute loop
+  setInterval(function() {
+    executeOngoing();
+  }, 300000);
 }
