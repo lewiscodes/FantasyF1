@@ -81,6 +81,39 @@ module.exports.processSeasonRaces = function() {
   });
 }
 
+module.exports.getTeams = function() {
+  return new Promise(function(resolve, reject) {
+    if (utils.online === false) {
+      // bypass getting data if no internet
+      return resolve("success");
+    }
+
+    var x = 0;
+    // finds each season that has not had teams processed
+    sqlite.db.each("SELECT SeasonID FROM Seasons WHERE fantasySeason = 1 AND teamsProcessed = 0", function(err, row) {
+      if (err || row === undefined) {
+        return reject(err);
+      }
+      // gets team data for season identified
+      request(API_URL + row.SeasonID + "/constructors" + API_URL_END, function(error, response, body) {
+        if (error) {
+          return reject(error);
+        }
+
+        // saves team data to specific season file
+        var json = JSON.parse(body);
+        json = JSON.stringify(json.MRData.ConstructorTable);
+        fs.writeFile("./db/ongoingData/4_SeasonTeams" + row.SeasonID + ".json", json);
+
+        x++
+        if (x ===row.length) {
+          return resolve("success");
+        }
+      });
+    });
+  });
+}
+
 function addAllRace(Race) {
   return new Promise(function(resolve, reject) {
     // checks to see if this race is already in the Races_All table;
