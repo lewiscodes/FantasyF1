@@ -14,7 +14,7 @@ module.exports.initDB = function() {
       files.forEach(function(file) {
         fs.readFile(scriptPath + file, "utf-8", function(err, script) {
           sqlite.db.run(script, function(err, row) {
-            if(err || row === undefined) {
+            if(err) {
               return reject(err);
             } else {
               x++;
@@ -77,7 +77,7 @@ module.exports.initData = function() {
                 }
                 // execute the sql query
                 stmt.run(argumentArray, function(err, row) {
-                  if (err || row === undefined) {
+                  if (err) {
                     return reject(err);
                   } else {
                     numOfFiles++;

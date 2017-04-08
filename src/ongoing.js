@@ -12,12 +12,12 @@ module.exports.getRaces = function() {
       return resolve("success");
     }
 
-    var x = 0;
     // finds each season that has not had races processed yet
     sqlite.db.each("SELECT SeasonID FROM Seasons WHERE fantasySeason = 1 AND RacesProcessed = 0", function(err, row) {
       if (err || row === undefined) {
         return reject(err);
       }
+
       // gets race data for season identified
       request(API_URL + row.SeasonID + API_URL_END, function(error, response, body) {
         if (error) {
@@ -28,13 +28,10 @@ module.exports.getRaces = function() {
         var json = JSON.parse(body);
         json = JSON.stringify(json.MRData.RaceTable);
         fs.writeFile("./db/ongoingData/3_SeasonRaces" + row.SeasonID + ".json", json);
-
-        x++;
-        if (x === row.length) {
-          return resolve("success");
-        }
       });
     });
+
+    return resolve("success");
   });
 }
 
@@ -44,8 +41,10 @@ module.exports.processSeasonRaces = function() {
     // gets the first season where the races haven;t been processed yet
     var sql = "SELECT SeasonID FROM Seasons WHERE FantasySeason = 1 AND RacesProcessed = 0 LIMIT 1";
     sqlite.db.get(sql, function(err, row) {
-      if (err || row === undefined) {
+      if (err) {
         return reject(err);
+      } else if (row === undefined) {
+        return resolve("no races to process");
       }
 
       fs.readdir(path, function(err, files) {
@@ -88,9 +87,10 @@ module.exports.getTeams = function() {
       return resolve("success");
     }
 
-    var x = 0;
+
     // finds each season that has not had teams processed
     sqlite.db.each("SELECT SeasonID FROM Seasons WHERE fantasySeason = 1 AND teamsProcessed = 0", function(err, row) {
+      console.log(row);
       if (err || row === undefined) {
         return reject(err);
       }
@@ -104,13 +104,9 @@ module.exports.getTeams = function() {
         var json = JSON.parse(body);
         json = JSON.stringify(json.MRData.ConstructorTable);
         fs.writeFile("./db/ongoingData/4_SeasonTeams" + row.SeasonID + ".json", json);
-
-        x++
-        if (x ===row.length) {
-          return resolve("success");
-        }
       });
     });
+    return resolve("success");
   });
 }
 
@@ -173,8 +169,8 @@ function addSeasonRace(Race, raceID){
         Race.round,
         Race.date,
         Race.time];
-      stmt.run(argumentArray, function(err, row) {
-        if (err || row === undefined) {
+      stmt.run(argumentArray, function(err) {
+        if (err) {
           return reject(err);
         }
         return resolve(argumentArray);

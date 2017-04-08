@@ -18,15 +18,19 @@ sqlite.db.each("SELECT count(*) FROM Seasons", function(err, row) {
             // runOngoing();
           }).catch(function(fail) {
             console.log(fail);
+            console.log("1");
           });
         }).catch(function(fail) {
           console.log(fail);
+          console.log("2");
         });
       }).catch(function(fail) {
         console.log(fail);
+        console.log("3");
       });
     }).catch(function(fail) {
       console.log(fail);
+      console.log("4");
     });
   } else {
     executeOngoing();
@@ -39,6 +43,11 @@ function executeOngoing(num) {
     utils.getDateTime("getRaces");
     ongoing.processSeasonRaces().then(function(success) {
       utils.getDateTime("processRaces");
+      ongoing.getTeams().then(function(success) {
+        utils.getDateTime("getTeams");
+      }).catch(function(fail) {
+        console.log(fail);
+      })
     }).catch(function(err) {
       console.log(err);
     });
