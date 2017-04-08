@@ -45,6 +45,11 @@ function executeOngoing(num) {
       utils.getDateTime("processRaces");
       ongoing.getTeams().then(function(success) {
         utils.getDateTime("getTeams");
+        ongoing.processTeams().then(function(success) {
+          utils.getDateTime("processTeams");
+        }).catch(function(fail) {
+          console.log(fail);
+        });
       }).catch(function(fail) {
         console.log(fail);
       })
