@@ -38,7 +38,7 @@ sqlite.db.each("SELECT count(*) FROM Seasons", function(err, row) {
   }
 });
 
-function executeOngoing(num) {
+function executeOngoing() {
   ongoing.getRaces().then(function(success) {
     utils.getDateTime("getRaces");
     ongoing.processSeasonRaces().then(function(success) {
@@ -51,7 +51,6 @@ function executeOngoing(num) {
             utils.getDateTime("getDrivers");
             ongoing.processDrivers().then(function(success) {
               utils.getDateTime("processDrivers");
-              
             }).catch(
               function(fail) {
                 console.log(fail);

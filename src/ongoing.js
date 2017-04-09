@@ -13,23 +13,23 @@ module.exports.getRaces = function() {
     }
 
     // finds each season that has not had races processed yet
-    sqlite.db.each("SELECT SeasonID FROM Seasons WHERE fantasySeason = 1 AND RacesProcessed = 0", function(err, row) {
-      if (err || row === undefined) {
-        return reject(err);
-      }
-
-      // gets race data for season identified
-      request(API_URL + row.SeasonID + API_URL_END, function(error, response, body) {
-        if (error) {
-          return reject(error);
-        }
-
-        // saves race data to specific season file
-        var json = JSON.parse(body);
-        json = JSON.stringify(json.MRData.RaceTable);
-        fs.writeFile("./db/ongoingData/3_SeasonRaces" + row.SeasonID + ".json", json);
-      });
-    });
+    // sqlite.db.each("SELECT SeasonID FROM Seasons WHERE fantasySeason = 1 AND RacesProcessed = 0", function(err, row) {
+    //   if (err || row === undefined) {
+    //     return reject(err);
+    //   }
+    //
+    //   // gets race data for season identified
+    //   request(API_URL + row.SeasonID + API_URL_END, function(error, response, body) {
+    //     if (error) {
+    //       return reject(error);
+    //     }
+    //
+    //     // saves race data to specific season file
+    //     var json = JSON.parse(body);
+    //     json = JSON.stringify(json.MRData.RaceTable);
+    //     fs.writeFile("./db/ongoingData/" + row.SeasonID + "/3_SeasonRaces" + row.SeasonID + ".json", json);
+    //   });
+    // });
 
     return resolve("success");
   });
@@ -37,7 +37,6 @@ module.exports.getRaces = function() {
 
 module.exports.processSeasonRaces = function() {
   return new Promise(function(resolve, reject) {
-    var path = "./db/ongoingData/";
     // gets the first season where the races haven;t been processed yet
     var sql = "SELECT SeasonID FROM Seasons WHERE FantasySeason = 1 AND RacesProcessed = 0 LIMIT 1";
     sqlite.db.get(sql, function(err, row) {
@@ -47,6 +46,7 @@ module.exports.processSeasonRaces = function() {
         return resolve("no races to process");
       }
 
+      var path = "./db/ongoingData/" + row.SeasonID + "/";
       fs.readdir(path, function(err, files) {
         files.forEach(function(file) {
           // finds json file for season identified
@@ -101,7 +101,7 @@ module.exports.getTeams = function() {
         // saves team data to specific season file
         var json = JSON.parse(body);
         json = JSON.stringify(json.MRData.ConstructorTable);
-        fs.writeFile("./db/ongoingData/4_SeasonTeams" + row.SeasonID + ".json", json);
+        fs.writeFile("./db/ongoingData/" + row.SeasonID + "/4_SeasonTeams" + row.SeasonID + ".json", json);
       });
     });
     return resolve("success");
@@ -110,7 +110,6 @@ module.exports.getTeams = function() {
 
 module.exports.processTeams = function() {
   return new Promise(function(resolve, reject) {
-    var path = "./db/ongoingData/";
     // gets the first season where the teams haven;t been processed yet
     var sql = "SELECT SeasonID FROM Seasons WHERE FantasySeason = 1 AND TeamsProcessed = 0 LIMIT 1";
     sqlite.db.get(sql, function(err, row) {
@@ -120,6 +119,7 @@ module.exports.processTeams = function() {
         return resolve("no teams to process");
       }
 
+      var path = "./db/ongoingData/" +  + row.SeasonID + "/";
       fs.readdir(path, function(err, files) {
         files.forEach(function(file) {
           // finds json file for season identified
@@ -172,7 +172,7 @@ module.exports.getDrivers = function() {
 
         var json = JSON.parse(body);
         json = JSON.stringify(json.MRData.DriverTable);
-        fs.writeFile("./db/ongoingData/5_SeasonDrivers" + row.SeasonID + ".json", json);
+        fs.writeFile("./db/ongoingData/" + row.SeasonID + "/5_SeasonDrivers" + row.SeasonID + ".json", json);
       });
     });
     return resolve("success");
@@ -181,7 +181,6 @@ module.exports.getDrivers = function() {
 
 module.exports.processDrivers = function() {
   return new Promise(function(resolve, reject) {
-    var path = "./db/ongoingData/";
     // gets the first season where the teams haven;t been processed yet
     var sql = "SELECT SeasonID FROM Seasons WHERE FantasySeason = 1 AND DriversProcessed = 0 LIMIT 1";
     sqlite.db.get(sql, function(err, row) {
@@ -191,6 +190,7 @@ module.exports.processDrivers = function() {
         return resolve("no teams to process");
       }
 
+      var path = "./db/ongoingData/" + row.SeasonID + "/";
       fs.readdir(path, function(err, files) {
         files.forEach(function(file) {
           if (file.indexOf("5_SeasonDrivers" + row.SeasonID + ".json") > -1) {
@@ -359,7 +359,6 @@ function addAllDrivers(Driver) {
   return new Promise(function(resolve, reject) {
     var sqlScript = "SELECT count(*) as 'count', DriverID FROM Drivers_All WHERE DriverName = '" + Driver.givenName + " " + Driver.familyName + "' AND DriverReference = '" + Driver.driverId + "'";
     sqlite.db.get(sqlScript, function(err, row) {
-      console.log(row);
       if (err || row === undefined) {
         return reject(err);
       } else if (row.count === 0) {
