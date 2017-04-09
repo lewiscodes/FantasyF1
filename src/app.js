@@ -47,6 +47,19 @@ function executeOngoing(num) {
         utils.getDateTime("getTeams");
         ongoing.processTeams().then(function(success) {
           utils.getDateTime("processTeams");
+          ongoing.getDrivers().then(function(success) {
+            utils.getDateTime("getDrivers");
+            ongoing.processDrivers().then(function(success) {
+              utils.getDateTime("processDrivers");
+              
+            }).catch(
+              function(fail) {
+                console.log(fail);
+              }
+            );
+          }).catch(function(fail) {
+            console.log(fail);
+          });
         }).catch(function(fail) {
           console.log(fail);
         });

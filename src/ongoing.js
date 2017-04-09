@@ -87,10 +87,8 @@ module.exports.getTeams = function() {
       return resolve("success");
     }
 
-
     // finds each season that has not had teams processed
     sqlite.db.each("SELECT SeasonID FROM Seasons WHERE fantasySeason = 1 AND teamsProcessed = 0", function(err, row) {
-      console.log(row);
       if (err || row === undefined) {
         return reject(err);
       }
@@ -142,6 +140,74 @@ module.exports.processTeams = function() {
                     });
                   }).catch(function(err) {
                     console.log(err);
+                  });
+                }).catch(function(fail) {
+                  console.log(fail);
+                });
+              }
+            });
+          }
+        });
+      });
+    });
+  });
+}
+
+module.exports.getDrivers = function() {
+  return new Promise(function(resolve, reject) {
+    if (utils.online === false) {
+      // bypass getting data if no internet
+      return resolve("success");
+    }
+
+    sqlite.db.each("SELECT SeasonID FROM Seasons WHERE fantasySeason = 1 AND DriversProcessed = 0", function(err, row) {
+      if (err || row === undefined) {
+        return reject(err);
+      }
+
+      request(API_URL + row.SeasonID + "/drivers" + API_URL_END, function(error, response, body) {
+        if (error) {
+          console.log(error);
+        }
+
+        var json = JSON.parse(body);
+        json = JSON.stringify(json.MRData.DriverTable);
+        fs.writeFile("./db/ongoingData/5_SeasonDrivers" + row.SeasonID + ".json", json);
+      });
+    });
+    return resolve("success");
+  });
+}
+
+module.exports.processDrivers = function() {
+  return new Promise(function(resolve, reject) {
+    var path = "./db/ongoingData/";
+    // gets the first season where the teams haven;t been processed yet
+    var sql = "SELECT SeasonID FROM Seasons WHERE FantasySeason = 1 AND DriversProcessed = 0 LIMIT 1";
+    sqlite.db.get(sql, function(err, row) {
+      if (err) {
+        return reject(err);
+      } else if(row ===undefined) {
+        return resolve("no teams to process");
+      }
+
+      fs.readdir(path, function(err, files) {
+        files.forEach(function(file) {
+          if (file.indexOf("5_SeasonDrivers" + row.SeasonID + ".json") > -1) {
+            fs.readFile(path + file, "utf-8", function(err, string) {
+              var json = JSON.parse(string);
+              for (var x in json.Drivers) {
+                addAllDrivers(json.Drivers[x]).then(function(success) {
+                  addSeasonDriver(row.SeasonID, success[0]).then(function(success) {
+                    var sql = "UPDATE Seasons SET DriversProcessed = 1 WHERE SeasonID = " + row.SeasonID;
+                    sqlite.db.exec(sql, function(err) {
+                      if (err) {
+                        return reject(err);
+                      }
+                      return resolve("success");
+                    });
+                  }).catch(function(fail) {
+                    console.log(fail);
                   });
                 }).catch(function(fail) {
                   console.log(fail);
@@ -277,6 +343,72 @@ function addSeasonTeam(SeasonID, teamID) {
 
       var stmt = sqlite.db.prepare(sqlString);
       var argumentArray = [teamID,
+        SeasonID
+      ];
+      stmt.run(argumentArray, function(err) {
+        if (err) {
+          return reject(err);
+        }
+        return resolve(argumentArray);
+      });
+    });
+  });
+}
+
+function addAllDrivers(Driver) {
+  return new Promise(function(resolve, reject) {
+    var sqlScript = "SELECT count(*) as 'count', DriverID FROM Drivers_All WHERE DriverName = '" + Driver.givenName + " " + Driver.familyName + "' AND DriverReference = '" + Driver.driverId + "'";
+    sqlite.db.get(sqlScript, function(err, row) {
+      console.log(row);
+      if (err || row === undefined) {
+        return reject(err);
+      } else if (row.count === 0) {
+        var path = "./db/ongoingData/ongoingDataScripts/";
+        var sqlfile = "5_AllDrivers.sql";
+
+        fs.readFile(path + sqlfile, "utf-8", function(err, sqlString) {
+          if (err) {
+            return reject(err);
+          }
+
+          var stmt = sqlite.db.prepare(sqlString);
+          var argumentArray = [Driver.driverId,
+            Driver.givenName  + " " + Driver.familyName,
+            Driver.nationality,
+            Driver.dateOfBirth
+          ];
+          stmt.run(argumentArray, function(err) {
+            if (err) {
+              reject(err);
+            }
+            sqlite.db.get(sqlScript, function(err, row) {
+              if (err || row === undefined) {
+                return reject(err);
+              }
+
+              return resolve([row.DriverID, Driver]);
+            })
+          });
+        });
+      } else {
+        return resolve([row.DriverID, Driver]);
+      }
+    });
+  });
+}
+
+function addSeasonDriver(SeasonID, DriverID) {
+  return new Promise(function(resolve, reject) {
+    var path = "./db/ongoingData/ongoingDataScripts/";
+    var sqlfile = "5_SeasonDrivers.sql";
+
+    fs.readFile(path + sqlfile, "utf-8", function(err, sqlString) {
+      if (err) {
+        return reject(err);
+      }
+
+      var stmt = sqlite.db.prepare(sqlString);
+      var argumentArray = [DriverID,
         SeasonID
       ];
       stmt.run(argumentArray, function(err) {
