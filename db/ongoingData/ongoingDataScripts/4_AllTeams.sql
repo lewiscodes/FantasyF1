@@ -1,1 +1,1 @@
-INSERT INTO Teams_All (TeamName, Nationality) VALUES (?, ?);
+INSERT INTO Teams_All (TeamName, TeamRef, Nationality) VALUES (?, ?, ?);

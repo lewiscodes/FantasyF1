@@ -1,3 +1,5 @@
+var sqlite = require('./sqlite');
+
 module.exports.getDateTime = function(calledFrom) {
   var date = new Date();
 
@@ -21,4 +23,32 @@ module.exports.getDateTime = function(calledFrom) {
   console.log(calledFrom + " executed: " + year + ":" + month + ":" + day + ":" + hour + ":" + min + ":" + sec);
 }
 
-module.exports.online = true;
+module.exports.getDriverIDFromDriverRef = function(driverRef) {
+  return new Promise(function(resolve, reject) {
+    var sqlfile = "SELECT DriverID FROM Drivers_All WHERE DriverReference = '" + driverRef + "'";
+    sqlite.db.get(sqlfile, function(err, row) {
+      if (err) {
+        return reject(err);
+      } else if (row === undefined) {
+        return reject("cant find driverID");
+      }
+      return resolve(row.DriverID);
+    });
+  });
+}
+
+module.exports.getTeamIDFromTeamRef = function(teamRef) {
+  return new Promise(function(resolve, reject) {
+    var sqlfile = "SELECT TeamID FROM Teams_All WHERE TeamRef = '" + teamRef + "'";
+    sqlite.db.get(sqlfile, function(err, row) {
+      if (err) {
+        return reject(err);
+      } else if (row === undefined) {
+        return reject("cant find teamID");
+      }
+      return resolve(row.TeamID);
+    });
+  });
+}
+
+module.exports.online = false;

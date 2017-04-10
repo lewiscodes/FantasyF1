@@ -221,6 +221,42 @@ module.exports.processDrivers = function() {
   });
 }
 
+module.exports.processDriverTeams = function() {
+  return new Promise(function(resolve, reject) {
+    var sql = "SELECT SeasonID FROM Seasons WHERE FantasySeason = 1 AND DriverTeamsProcessed = 0 LIMIT 1";
+    sqlite.db.get(sql, function(err, row) {
+      if (err) {
+        return reject(err);
+      } else if (row === undefined) {
+        return resolve("no driver teams to process");
+      }
+
+      var path  = "./db/ongoingData/" + row.SeasonID + "/";
+      fs.readdir(path, function(err, files) {
+        files.forEach(function(file) {
+          if (file.indexOf("6_SeasonDriverTeam" + row.SeasonID + ".json") > -1) {
+            fs.readFile(path + file, "utf-8", function(err, string) {
+              var json = JSON.parse(string);
+              for (var x = 0 in json.drivers) {
+                addSeasonDriverTeam(row.SeasonID, json.drivers[x].driverRef, json.drivers[x].teamRef).then().catch(function(fail) {
+                  console.log(fail);
+                });
+              }
+              sql = "UPDATE Seasons SET DriverTeamsProcessed = 1 WHERE SeasonID = '" + row.SeasonID + "'"
+              sqlite.db.exec(sql, function(err) {
+                if (err) {
+                  return reject(err);
+                }
+                return resolve("success");
+              });
+            });
+          }
+        });
+      });
+    });
+  });
+}
+
 function addAllRace(Race) {
   return new Promise(function(resolve, reject) {
     // checks to see if this race is already in the Races_All table;
@@ -310,6 +346,7 @@ function addAllTeams(Team) {
 
             var stmt = sqlite.db.prepare(sqlString);
             var argumentArray = [Team.name,
+              Team.constructorId,
               Team.nationality
             ]
             stmt.run(argumentArray, function(err) {
@@ -416,6 +453,30 @@ function addSeasonDriver(SeasonID, DriverID) {
         }
         return resolve(argumentArray);
       });
+    });
+  });
+}
+
+function addSeasonDriverTeam(seasonID, driverRef, teamRef) {
+  return new Promise(function(resolve, reject) {
+    var DriverID = null;
+    var TeamID = null;
+    utils.getDriverIDFromDriverRef(driverRef).then(function(success) {
+      DriverID = success;
+      utils.getTeamIDFromTeamRef(teamRef).then(function(success) {
+        TeamID = success;
+        sqlfile = "UPDATE Drivers SET TeamID = '" + TeamID + "' WHERE DriverID = '" + DriverID + "' AND SeasonID = '" + seasonID + "'"
+        sqlite.db.exec(sqlfile, function(err) {
+          if (err) {
+            return reject(err);
+          }
+          return resolve("success");
+        });
+      }).catch(function(fail) {
+        console.log(fail);
+      });
+    }).catch(function(fail) {
+      console.log(fail);
     });
   });
 }
