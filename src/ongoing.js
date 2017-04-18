@@ -13,23 +13,23 @@ module.exports.getRaces = function() {
     }
 
     // finds each season that has not had races processed yet
-    // sqlite.db.each("SELECT SeasonID FROM Seasons WHERE fantasySeason = 1 AND RacesProcessed = 0", function(err, row) {
-    //   if (err || row === undefined) {
-    //     return reject(err);
-    //   }
-    //
-    //   // gets race data for season identified
-    //   request(API_URL + row.SeasonID + API_URL_END, function(error, response, body) {
-    //     if (error) {
-    //       return reject(error);
-    //     }
-    //
-    //     // saves race data to specific season file
-    //     var json = JSON.parse(body);
-    //     json = JSON.stringify(json.MRData.RaceTable);
-    //     fs.writeFile("./db/ongoingData/" + row.SeasonID + "/3_SeasonRaces" + row.SeasonID + ".json", json);
-    //   });
-    // });
+    sqlite.db.each("SELECT SeasonID FROM Seasons WHERE fantasySeason = 1 AND RacesProcessed = 0", function(err, row) {
+      if (err || row === undefined) {
+        return reject(err);
+      }
+
+      // gets race data for season identified
+      request(API_URL + row.SeasonID + API_URL_END, function(error, response, body) {
+        if (error) {
+          return reject(error);
+        }
+
+        // saves race data to specific season file
+        var json = JSON.parse(body);
+        json = JSON.stringify(json.MRData.RaceTable);
+        fs.writeFile("./db/ongoingData/" + row.SeasonID + "/3_SeasonRaces" + row.SeasonID + ".json", json);
+      });
+    });
 
     return resolve("success");
   });
@@ -257,6 +257,39 @@ module.exports.processDriverTeams = function() {
   });
 }
 
+module.exports.getRaceResults = function() {
+  return new Promise(function(resolve, reject) {
+    var sql = "SELECT SeasonID, Round, RaceDate, RaceTime FROM Races WHERE RaceGot = 0 ORDER BY RaceDate ASC LIMIT 1";
+    sqlite.db.get(sql, function(err, row) {
+      if (err) {
+        return reject(err);
+      } else if (row === undefined) {
+        return resolve("no races to process");
+      }
+
+      request(API_URL + row.SeasonID + "/" + row.round + "/results" + API_URL_END, function(error, response, body) {
+        if (error) {
+          console.log(error);
+        }
+
+        var json = JSON.parse(body);
+        json = json.MRData.RaceTable.Races[0].Results;
+        for (var x in json) {
+          addRaceResult(row.SeasonID, row.round, json[x].Driver.driverId, json[x].position);
+
+          if (json[x].FastestLap !== undefined) {
+            if (json[x].FastestLap.rank === "1") {
+              addRaceFastestLap(row.SeasonID, row.round, json[x].Driver.driverId)
+            }
+          }
+        }
+
+        return resolve("success");
+      });
+    });
+  });
+}
+
 function addAllRace(Race) {
   return new Promise(function(resolve, reject) {
     // checks to see if this race is already in the Races_All table;
@@ -477,6 +510,57 @@ function addSeasonDriverTeam(seasonID, driverRef, teamRef) {
       });
     }).catch(function(fail) {
       console.log(fail);
+    });
+  });
+}
+
+function addRaceResult(SeasonID, Round, driverRef, position) {
+  return new Promise(function(resolve, reject) {
+    var DriverID = null;
+    var RaceID = null;
+    utils.getDriverIDFromDriverRef(driverRef).then(function(success) {
+      DriverID = success;
+      utils.getRaceIDFromSeasonAndRound(SeasonID, Round).then(function(success) {
+        RaceID = success;
+
+        var sqlString = "INSERT INTO RaceResults VALUES (?, ?, ?);"
+        var stmt = sqlite.db.prepare(sqlString);
+        var argumentArray = [RaceID,
+          DriverID,
+          position];
+        stmt.run(argumentArray, function(err) {
+          if (err) {
+            return reject(err);
+          }
+
+          return resolve("success");
+        });
+      });
+    });
+  });
+}
+
+function addRaceFastestLap(SeasonID, Round, driverRef) {
+  return new Promise(function(resolve, reject) {
+    var DriverID = null;
+    var RaceID = null;
+    utils.getDriverIDFromDriverRef(driverRef).then(function(success) {
+      DriverID = success;
+      utils.getRaceIDFromSeasonAndRound(SeasonID, Round).then(function(success) {
+        RaceID = success;
+
+        var sqlString = "INSERT INTO RaceFastestLap VALUES (?, ?);"
+        var stmt = sqlite.db.prepare(sqlString);
+        var argumentArray = [RaceID,
+          DriverID];
+        stmt.run(argumentArray, function(err) {
+          if (err) {
+            return reject(err);
+          }
+
+          return resolve("success");
+        });
+      });
     });
   });
 }

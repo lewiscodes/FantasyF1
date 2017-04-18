@@ -25,45 +25,50 @@ sqlite.db.each("SELECT count(*) FROM Seasons", function(err, row) {
     })
     .then(function() {
       executeOngoing();
+      // runOngoing();
     })
     .catch(function(fail) {
       console.log(fail);
     });
   } else {
     executeOngoing();
-    runOngoing();
+    // runOngoing();
   }
 });
 
 function executeOngoing() {
   utils.getDateTime("Started executeOngoing")
   .then(function() {
-    utils.getDateTime("Started getRaces")
+    utils.getDateTime("Started getRaces");
     return ongoing.getRaces();
   })
   .then(function() {
-    utils.getDateTime("Started processSeasonRaces")
+    utils.getDateTime("Started processSeasonRaces");
     return ongoing.processSeasonRaces();
   })
   .then(function() {
-    utils.getDateTime("Started getTeams")
+    utils.getDateTime("Started getTeams");
     return ongoing.getTeams();
   })
   .then(function() {
-    utils.getDateTime("Started processTeams")
+    utils.getDateTime("Started processTeams");
     return ongoing.processTeams();
   })
   .then(function() {
-    utils.getDateTime("Started getDrivers")
-    return ongoing.getDrivers()
+    utils.getDateTime("Started getDrivers");
+    return ongoing.getDrivers();
   })
   .then(function() {
-    utils.getDateTime("Started processDrivers")
-    return ongoing.processDrivers()
+    utils.getDateTime("Started processDrivers");
+    return ongoing.processDrivers();
   })
   .then(function() {
-    utils.getDateTime("Started processDriverTeams")
-    return ongoing.processDriverTeams()
+    utils.getDateTime("Started processDriverTeams");
+    return ongoing.processDriverTeams();
+  })
+  .then(function() {
+    utils.getDateTime("Started getRaceResults");
+    return ongoing.getRaceResults();
   })
   .catch(function(fail) {
     console.log(fail);

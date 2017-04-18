@@ -54,4 +54,19 @@ module.exports.getTeamIDFromTeamRef = function(teamRef) {
   });
 }
 
+module.exports.getRaceIDFromSeasonAndRound = function(SeasonID, Round) {
+  return new Promise(function(resolve, reject) {
+    var sqlFile = "SELECT RaceID FROM Races WHERE SeasonID = " + SeasonID + " AND Round = " + Round;
+    sqlite.db.get(sqlFile, function(err, row) {
+      if (err) {
+        return reject(err);
+      } else if (row === undefined) {
+        return reject("cant find RaceID");
+      }
+      return resolve(row.RaceID);
+    });
+  });
+}
+
 module.exports.online = false;
+module.exports.ProcessNextRace = true;
