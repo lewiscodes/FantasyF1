@@ -70,6 +70,10 @@ function executeOngoing() {
     utils.getDateTime("Started getRaceResults");
     return ongoing.getRaceResults();
   })
+  .then(function() {
+    utils.getDateTime("Started getQualiResults");
+    return ongoing.getQualiResults();
+  })
   .catch(function(fail) {
     console.log(fail);
   });

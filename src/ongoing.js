@@ -257,6 +257,39 @@ module.exports.processDriverTeams = function() {
   });
 }
 
+module.exports.getQualiResults = function() {
+  return new Promise(function(resolve, reject) {
+    var sql = "SELECT SeasonID, Round, RaceID, RaceDate, RaceTime FROM Races WHERE QualifyingGot = 0 ORDER BY RaceDate ASC LIMIT 1";
+    sqlite.db.get(sql, function(err, row) {
+      if (err) {
+        return reject(err);
+      } else if (row === undefined) {
+        return resolve("no races to process");
+      }
+
+      request(API_URL + row.SeasonID + "/" + row.round + "/qualifying" + API_URL_END, function(error, response, body) {
+        if (error) {
+          console.log(error);
+        }
+
+        var json = JSON.parse(body);
+        json = json.MRData.RaceTable.Races[0].QualifyingResults;
+        for (var x in json) {
+          addQualiResult(row.SeasonID, row.round, json[x].Driver.driverId, json[x].position);
+        }
+
+        sql = "UPDATE Races SET QualifyingGot = 1 WHERE RaceID = '" + row.RaceID + "'"
+        sqlite.db.exec(sql, function(err) {
+          if (err) {
+            return reject(err);
+          }
+          return resolve("success");
+        });
+      });
+    });
+  });
+}
+
 module.exports.getRaceResults = function() {
   return new Promise(function(resolve, reject) {
     var sql = "SELECT SeasonID, Round, RaceDate, RaceTime FROM Races WHERE RaceGot = 0 ORDER BY RaceDate ASC LIMIT 1";
@@ -284,7 +317,13 @@ module.exports.getRaceResults = function() {
           }
         }
 
-        return resolve("success");
+        sql = "UPDATE Races SET RaceGot = 1 WHERE RaceID = '" + row.RaceID + "'"
+        sqlite.db.exec(sql, function(err) {
+          if (err) {
+            return reject(err);
+          }
+          return resolve("success");
+        });
       });
     });
   });
@@ -510,6 +549,31 @@ function addSeasonDriverTeam(seasonID, driverRef, teamRef) {
       });
     }).catch(function(fail) {
       console.log(fail);
+    });
+  });
+}
+
+function addQualiResult(SeasonID, Round, driverRef, position) {
+  return new Promise(function(resolve, reject) {
+    var DriverID = null;
+    var RaceID = null;
+    utils.getDriverIDFromDriverRef(driverRef).then(function(success) {
+      DriverID = success;
+      utils.getRaceIDFromSeasonAndRound(SeasonID, Round).then(function(success) {
+        RaceID = success;
+
+        var sqlString = "INSERT INTO QualifyingResults VALUES (?, ?, ?)";
+        var stmt = sqlite.db.prepare(sqlString);
+        var argumentArray = [RaceID,
+          DriverID,
+          position];
+        stmt.run(argumentArray, function(err) {
+          if (err) {
+            return reject(err);
+          }
+          return resolve("success");
+        });
+      });
     });
   });
 }
