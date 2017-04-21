@@ -259,7 +259,7 @@ module.exports.processDriverTeams = function() {
 
 module.exports.getQualiResults = function() {
   return new Promise(function(resolve, reject) {
-    var sql = "SELECT SeasonID, Round, RaceID, RaceDate, RaceTime FROM Races WHERE QualifyingGot = 0 ORDER BY RaceDate ASC LIMIT 1";
+    var sql = "SELECT SeasonID, Round, RaceDate, RaceID FROM Races WHERE QualifyingGot = 0 AND RaceDate < Date('now' ,'+1 day') ORDER BY RaceDate ASC LIMIT 1";
     sqlite.db.get(sql, function(err, row) {
       if (err) {
         return reject(err);
@@ -278,7 +278,7 @@ module.exports.getQualiResults = function() {
           addQualiResult(row.SeasonID, row.round, json[x].Driver.driverId, json[x].position);
         }
 
-        sql = "UPDATE Races SET QualifyingGot = 1 WHERE RaceID = '" + row.RaceID + "'"
+        sql = "UPDATE Races SET QualifyingGot = 1 WHERE RaceID = '" + row.RaceID + "' AND SeasonID = '" + row.SeasonID + "'";
         sqlite.db.exec(sql, function(err) {
           if (err) {
             return reject(err);
@@ -292,7 +292,7 @@ module.exports.getQualiResults = function() {
 
 module.exports.getRaceResults = function() {
   return new Promise(function(resolve, reject) {
-    var sql = "SELECT SeasonID, Round, RaceDate, RaceTime FROM Races WHERE RaceGot = 0 ORDER BY RaceDate ASC LIMIT 1";
+    var sql = "SELECT SeasonID, Round, RaceDate, RaceID FROM Races WHERE RaceGot = 0 AND RaceDate < Date('now' ,'+1 day') ORDER BY RaceDate ASC LIMIT 1";
     sqlite.db.get(sql, function(err, row) {
       if (err) {
         return reject(err);
@@ -317,7 +317,7 @@ module.exports.getRaceResults = function() {
           }
         }
 
-        sql = "UPDATE Races SET RaceGot = 1 WHERE RaceID = '" + row.RaceID + "'"
+        sql = "UPDATE Races SET RaceGot = 1 WHERE RaceID = '" + row.RaceID + "' AND SeasonID = '" + row.SeasonID + "'";
         sqlite.db.exec(sql, function(err) {
           if (err) {
             return reject(err);

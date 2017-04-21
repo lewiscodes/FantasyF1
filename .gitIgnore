@@ -1,2 +1,6 @@
 node_modules
 npm-debug.log
+*.db-journal
+./db/FantasyF1.db
+.DS_Store
+*.db
