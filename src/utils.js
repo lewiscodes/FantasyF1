@@ -21,7 +21,9 @@ module.exports.getDateTime = function(calledFrom) {
     var day  = date.getDate();
     day = (day < 10 ? "0" : "") + day;
 
-    console.log(calledFrom + " executed: " + year + ":" + month + ":" + day + ":" + hour + ":" + min + ":" + sec);
+    if (this.debug) {
+      console.log(calledFrom + " executed: " + year + ":" + month + ":" + day + ":" + hour + ":" + min + ":" + sec);
+    }
     return resolve("success");
   });
 }
@@ -70,3 +72,4 @@ module.exports.getRaceIDFromSeasonAndRound = function(SeasonID, Round) {
 
 module.exports.online = false;
 module.exports.ProcessNextRace = true;
+module.exports.debug = false;
