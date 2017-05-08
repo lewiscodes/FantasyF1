@@ -1,0 +1,34 @@
+{
+  {
+    "code" : "",
+    "status" : ""
+  },
+  {
+    "code" : "100",
+    "status" : "Database Insert Successful"
+  },
+  {
+    "code" : "1",
+    "status" : "Database Record already exists"
+  },
+  {
+    "code" : "2",
+    "status" : "Database Error"
+  },
+  {
+    "code" : "3",
+    "status" : "Login Unsuccessful"
+  },
+  {
+    "code" : "4",
+    "status" : "No Next Race Information"
+  },
+  {
+    "code" : "5",
+    "status" : "Driver Use Exceeded"
+  },
+  {
+    "code" : "6",
+    "status" : "Fantasy Pick Added"
+  },
+}

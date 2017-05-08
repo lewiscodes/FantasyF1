@@ -1,1 +1,1 @@
-CREATE TABLE RaceFastestLap (RaceID INT, DriverID INT);
+CREATE TABLE RaceFastestLap (SeasonID INT, RaceID INT, DriverID INT);

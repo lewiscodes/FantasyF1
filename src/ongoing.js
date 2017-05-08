@@ -259,6 +259,11 @@ module.exports.processDriverTeams = function() {
 
 module.exports.getQualiResults = function() {
   return new Promise(function(resolve, reject) {
+    if (utils.online === false) {
+      // bypass getting data if no internet
+      return resolve("success");
+    }
+
     var sql = "SELECT SeasonID, Round, RaceDate, RaceID FROM Races WHERE QualifyingGot = 0 AND RaceDate < Date('now' ,'+1 day') ORDER BY RaceDate ASC LIMIT 1";
     sqlite.db.get(sql, function(err, row) {
       if (err) {
@@ -292,6 +297,11 @@ module.exports.getQualiResults = function() {
 
 module.exports.getRaceResults = function() {
   return new Promise(function(resolve, reject) {
+    if (utils.online === false) {
+      // bypass getting data if no internet
+      return resolve("success");
+    }
+
     var sql = "SELECT SeasonID, Round, RaceDate, RaceID FROM Races WHERE RaceGot = 0 AND RaceDate < Date('now' ,'+1 day') ORDER BY RaceDate ASC LIMIT 1";
     sqlite.db.get(sql, function(err, row) {
       if (err) {
@@ -325,6 +335,22 @@ module.exports.getRaceResults = function() {
           return resolve("success");
         });
       });
+    });
+  });
+}
+
+module.exports.processPoints = function() {
+  return new Promise(function(resolve, reject) {
+    var sql = "SELECT RaceID, SeasonID FROM Races where QualifyingGot = 1 AND RaceGot = 1 AND QualifyingProcessed = 0 AND RaceProcessed = 0 LIMIT 1";
+    sqlite.db.get(sql, function(err, row) {
+      if (err) {
+        return reject(err);
+      } else if (row === undefined) {
+        return resolve("no races to process");
+      }
+
+      processQualifyingPoints(row.RaceID, row.SeasonID);
+      processRacePoints(row.RaceID, row.SeasonID);
     });
   });
 }
@@ -562,9 +588,10 @@ function addQualiResult(SeasonID, Round, driverRef, position) {
       utils.getRaceIDFromSeasonAndRound(SeasonID, Round).then(function(success) {
         RaceID = success;
 
-        var sqlString = "INSERT INTO QualifyingResults VALUES (?, ?, ?)";
+        var sqlString = "INSERT INTO QualifyingResults VALUES (?, ?, ?, ?)";
         var stmt = sqlite.db.prepare(sqlString);
-        var argumentArray = [RaceID,
+        var argumentArray = [SeasonID,
+          RaceID,
           DriverID,
           position];
         stmt.run(argumentArray, function(err) {
@@ -587,9 +614,10 @@ function addRaceResult(SeasonID, Round, driverRef, position) {
       utils.getRaceIDFromSeasonAndRound(SeasonID, Round).then(function(success) {
         RaceID = success;
 
-        var sqlString = "INSERT INTO RaceResults VALUES (?, ?, ?);"
+        var sqlString = "INSERT INTO RaceResults VALUES (?, ?, ?, ?);"
         var stmt = sqlite.db.prepare(sqlString);
-        var argumentArray = [RaceID,
+        var argumentArray = [SeasonID,
+          RaceID,
           DriverID,
           position];
         stmt.run(argumentArray, function(err) {
@@ -613,9 +641,10 @@ function addRaceFastestLap(SeasonID, Round, driverRef) {
       utils.getRaceIDFromSeasonAndRound(SeasonID, Round).then(function(success) {
         RaceID = success;
 
-        var sqlString = "INSERT INTO RaceFastestLap VALUES (?, ?);"
+        var sqlString = "INSERT INTO RaceFastestLap VALUES (?, ?, ?);"
         var stmt = sqlite.db.prepare(sqlString);
-        var argumentArray = [RaceID,
+        var argumentArray = [SeasonID,
+          RaceID,
           DriverID];
         stmt.run(argumentArray, function(err) {
           if (err) {
@@ -625,6 +654,402 @@ function addRaceFastestLap(SeasonID, Round, driverRef) {
           return resolve("success");
         });
       });
+    });
+  });
+}
+
+function processQualifyingPoints(RaceID, SeasonID) {
+  return new Promise(function(resolve, reject) {
+    var sql = "SELECT QR.RaceID, QR.DriverID, QR.Position, R.SeasonID FROM QualifyingResults QR INNER JOIN Races R ON QR.RaceID = R.RaceID WHERE QR.RaceID = " + RaceID + "AND R.SeasonID = " + SeasonID;
+    sqlite.db.each(sql, function(err, row) {
+      if (err) {
+        return reject(err);
+      }
+
+      addQualifyingBeatTeammatePoints(SeasonID, RaceID, row.DriverID, row.Position)
+        .then(function(success) {
+          return resolve(success);
+        })
+        .catch(functin(fail) {
+          return reject(fail);
+        });
+    });
+  });
+}
+
+function processRacePoints(RaceID, SeasonID) {
+  return new Promise(function(resolve, reject) {
+    var sql = "SELECT RR.RaceID, RR.DriverID, RR.Position, R.SeasonID FROM RaceResults RR INNER JOIN Races R ON RR.RaceID = R.RaceID WHERE RR.RaceID = " + RaceID + " AND R.SeasonID = " + SeasonID;
+    sqlite.db.each(sql, function(err, row) {
+      if (err) {
+        return reject(err);
+      }
+
+      addRaceBeatTeammatePoints(SeasonID, RaceID, row.DriverID, row.Position)
+        .then(function() {
+          return addRaceFastestLap(SeasonID, RaceID);
+        })
+        .then(function() {
+          return addRace1stPlacePoints(SeasonID, RaceID);
+        })
+        .then(function() {
+          return addRace2ndPlacePoints(SeasonID, RaceID);
+        })
+        .then(function() {
+          return addRace3rdPlacePoints(SeasonID, RaceID);
+        })
+        .then(function() {
+          return addRace4thPlacePoints(SeasonID, RaceID);
+        })
+        .then(function() {
+          return addRace5thPlacePoints(SeasonID, RaceID);
+        })
+        .then(function() {
+          return addRace6thPlacePoints(SeasonID, RaceID);
+        })
+        .then(function() {
+          return addRace7thPlacePoints(SeasonID, RaceID);
+        })
+        .then(function() {
+          return addRace8thPlacePoints(SeasonID, RaceID);
+        })
+        .then(function() {
+          return addRace9thPlacePoints(SeasonID, RaceID);
+        })
+        .then(function() {
+          return addRace10thPlacePoints(SeasonID, RaceID);
+        })
+        .catch(function(fail) {
+          console.log(fail);
+        })
+    });
+  });
+}
+
+function addQualifyingBeatTeammatePoints(SeasonID, RaceID, DriverID, DriverPosition) {
+  return new Promise (function(resolve, reject) {
+    utils.getDriverTeammateFromDriverIDAndSeasonForRaceID(row.DriverID, row.SeasonID, RaceID)
+      .then(function(TeamMateDriverID) {
+        sql = "SELECT * FROM QualifyingResults WHERE SeasonID = " + SeasonID + " AND RaceID = " + RaceID + " AND DriverID = " + TeamMateDriverID;
+        sqlite.db.get(sql, function(err, row) {
+          if (err) {
+            return reject(err);
+          } else if (row === undefined) {
+            return reject("cant find teammate qualifying result");
+          }
+
+          if (DriverPosition < row.Position) {
+            sql = "SELECT * FROM UserSeasonDriverUse WHERE SeasonID = " + row.SeasonID + " AND RaceID = " + RaceID + " AND DriverID = " + DriverID;
+            sqlite.db.each(sql, function(err, row) {
+              if (err) {
+                return reject(err);
+              }
+
+              addUserPoints(row.UserID, RaceID, 1);
+          } else {
+            var sql = "SELECT * FROM UserSeasonDriverUse WHERE SeasonID = " + row.SeasonID + " AND RaceID = " + row.RaceID + " AND DriverID = " + row.DriverID;
+            sqlite.db.each(sql, function(err, row) {
+              if (err) {
+                return reject(err);
+              }
+
+              addUserPoints(row.UserID, RaceID, 1);
+          }
+        });
+      });
+  });
+}
+
+function addRaceBeatTeammatePoints(SeasonID, RaceID, DriverID, DriverPosition) {
+  return new Promise (function(resolve, reject) {
+    utils.getDriverTeammateFromDriverIDAndSeasonForRaceID(row.DriverID, row.SeasonID, RaceID)
+      .then(function(TeamMateDriverID) {
+        sql = "SELECT * FROM RaceResults WHERE SeasonID = " + SeasonID + " AND RaceID = " + RaceID + " AND DriverID = " + TeamMateDriverID;
+        sqlite.db.get(sql, function(err, row) {
+          if (err) {
+            return reject(err);
+          } else if (row === undefined) {
+            return reject("cant find teammate race result");
+          }
+
+          if (DriverPosition < row.Position) {
+            sql = "SELECT * FROM UserSeasonDriverUse WHERE SeasonID = " + row.SeasonID + " AND RaceID = " + RaceID + " AND DriverID = " + DriverID;
+            sqlite.db.each(sql, function(err, row) {
+              if (err) {
+                return reject(err);
+              }
+
+              addUserPoints(row.UserID, RaceID, 2);
+          } else {
+            var sql = "SELECT * FROM UserSeasonDriverUse WHERE SeasonID = " + row.SeasonID + " AND RaceID = " + row.RaceID + " AND DriverID = " + row.DriverID;
+            sqlite.db.each(sql, function(err, row) {
+              if (err) {
+                return reject(err);
+              }
+
+              addUserPoints(row.UserID, RaceID, 2);
+          }
+        });
+      });
+  });
+}
+
+function addRaceFastestLapPoints(SeasonID, RaceID) {
+  return new Promise(function(resolve, reject) {
+    var sql = "SELECT * FROM RaceFastestLap WHERE SeasonID = " + SeasonID + " AND RaceID = " + RaceID;
+    sqlite.db.get(sql, function(err, row) {
+      if (err) {
+        return reject(err);
+      } else if (row === undefined) {
+        return reject("cant find fastest lap");
+      }
+
+      sql = "SELECT * FROM UserSeasonDriverUse WHERE SeasonID = " + SeasonID + " AND RaceID = " + RaceID + " AND DriverID = " + row.DriverID;
+      sqlite.db.each(sql, function(err, row) {
+        if (err) {
+          return reject(err);
+        }
+
+        addUserPoints(row.UserID, RaceID, SeasonID, 3);
+      });
+    });
+  });
+}
+
+function addRace1stPlacePoints(SeasonID, RaceID) {
+  return new Promise(function(resolve, reject) {
+    var sql = "SELECT * FROM RaceResults WHERE SeasonID = " + SeasonID + " AND RaceID = " + RaceID + " AND Position = 1";
+    sqlite.db.get(sql, function(err, row) {
+      if (err) {
+        return reject(err);
+      } else if (row === undefined) {
+        return reject("cant find 1st place race finish");
+      }
+
+      sql = "SELECT * FROM UserSeasonDriverUse WHERE SeasonID = " + SeasonID + " AND RaceID = " + RaceID + " AND DriverID = " + row.DriverID;
+      sqlite.db.each(sql, function(err, row) {
+        if (err) {
+          return reject(err);
+        }
+
+        addUserPoints(row.UserID, RaceID, SeasonID, 4);
+      });
+    });
+  });
+}
+
+function addRace2ndPlacePoints(SeasonID, RaceID) {
+  return new Promise(function(resolve, reject) {
+    var sql = "SELECT * FROM RaceResults WHERE SeasonID = " + SeasonID + " AND RaceID = " + RaceID + " AND Position = 2";
+    sqlite.db.get(sql, function(err, row) {
+      if (err) {
+        return reject(err);
+      } else if (row === undefined) {
+        return reject("cant find 2nd place race finish");
+      }
+
+      sql = "SELECT * FROM UserSeasonDriverUse WHERE SeasonID = " + SeasonID + " AND RaceID = " + RaceID + " AND DriverID = " + row.DriverID;
+      sqlite.db.each(sql, function(err, row) {
+        if (err) {
+          return reject(err);
+        }
+
+        addUserPoints(row.UserID, RaceID, SeasonID, 5);
+      });
+    });
+  });
+}
+
+function addRace3rdPlacePoints(SeasonID, RaceID) {
+  return new Promise(function(resolve, reject) {
+    var sql = "SELECT * FROM RaceResults WHERE SeasonID = " + SeasonID + " AND RaceID = " + RaceID + " AND Position = 3";
+    sqlite.db.get(sql, function(err, row) {
+      if (err) {
+        return reject(err);
+      } else if (row === undefined) {
+        return reject("cant find 3rd place race finish");
+      }
+
+      sql = "SELECT * FROM UserSeasonDriverUse WHERE SeasonID = " + SeasonID + " AND RaceID = " + RaceID + " AND DriverID = " + row.DriverID;
+      sqlite.db.each(sql, function(err, row) {
+        if (err) {
+          return reject(err);
+        }
+
+        addUserPoints(row.UserID, RaceID, SeasonID, 6);
+      });
+    });
+  });
+}
+
+function addRace4thPlacePoints(SeasonID, RaceID) {
+  return new Promise(function(resolve, reject) {
+    var sql = "SELECT * FROM RaceResults WHERE SeasonID = " + SeasonID + " AND RaceID = " + RaceID + " AND Position = 4";
+    sqlite.db.get(sql, function(err, row) {
+      if (err) {
+        return reject(err);
+      } else if (row === undefined) {
+        return reject("cant find 4th place race finish");
+      }
+
+      sql = "SELECT * FROM UserSeasonDriverUse WHERE SeasonID = " + SeasonID + " AND RaceID = " + RaceID + " AND DriverID = " + row.DriverID;
+      sqlite.db.each(sql, function(err, row) {
+        if (err) {
+          return reject(err);
+        }
+
+        addUserPoints(row.UserID, RaceID, SeasonID, 7);
+      });
+    });
+  });
+}
+
+function addRace5thPlacePoints(SeasonID, RaceID) {
+  return new Promise(function(resolve, reject) {
+    var sql = "SELECT * FROM RaceResults WHERE SeasonID = " + SeasonID + " AND RaceID = " + RaceID + " AND Position = 5";
+    sqlite.db.get(sql, function(err, row) {
+      if (err) {
+        return reject(err);
+      } else if (row === undefined) {
+        return reject("cant find 5th place race finish");
+      }
+
+      sql = "SELECT * FROM UserSeasonDriverUse WHERE SeasonID = " + SeasonID + " AND RaceID = " + RaceID + " AND DriverID = " + row.DriverID;
+      sqlite.db.each(sql, function(err, row) {
+        if (err) {
+          return reject(err);
+        }
+
+        addUserPoints(row.UserID, RaceID, SeasonID, 8);
+      });
+    });
+  });
+}
+
+function addRace6thPlacePoints(SeasonID, RaceID) {
+  return new Promise(function(resolve, reject) {
+    var sql = "SELECT * FROM RaceResults WHERE SeasonID = " + SeasonID + " AND RaceID = " + RaceID + " AND Position = 6";
+    sqlite.db.get(sql, function(err, row) {
+      if (err) {
+        return reject(err);
+      } else if (row === undefined) {
+        return reject("cant find 6th place race finish");
+      }
+
+      sql = "SELECT * FROM UserSeasonDriverUse WHERE SeasonID = " + SeasonID + " AND RaceID = " + RaceID + " AND DriverID = " + row.DriverID;
+      sqlite.db.each(sql, function(err, row) {
+        if (err) {
+          return reject(err);
+        }
+
+        addUserPoints(row.UserID, RaceID, SeasonID, 9);
+      });
+    });
+  });
+}
+
+function addRace7thPlacePoints(SeasonID, RaceID) {
+  return new Promise(function(resolve, reject) {
+    var sql = "SELECT * FROM RaceResults WHERE SeasonID = " + SeasonID + " AND RaceID = " + RaceID + " AND Position = 7";
+    sqlite.db.get(sql, function(err, row) {
+      if (err) {
+        return reject(err);
+      } else if (row === undefined) {
+        return reject("cant find 7th place race finish");
+      }
+
+      sql = "SELECT * FROM UserSeasonDriverUse WHERE SeasonID = " + SeasonID + " AND RaceID = " + RaceID + " AND DriverID = " + row.DriverID;
+      sqlite.db.each(sql, function(err, row) {
+        if (err) {
+          return reject(err);
+        }
+
+        addUserPoints(row.UserID, RaceID, SeasonID, 10);
+      });
+    });
+  });
+}
+
+function addRace8thPlacePoints(SeasonID, RaceID) {
+  return new Promise(function(resolve, reject) {
+    var sql = "SELECT * FROM RaceResults WHERE SeasonID = " + SeasonID + " AND RaceID = " + RaceID + " AND Position = 8";
+    sqlite.db.get(sql, function(err, row) {
+      if (err) {
+        return reject(err);
+      } else if (row === undefined) {
+        return reject("cant find 8th place race finish");
+      }
+
+      sql = "SELECT * FROM UserSeasonDriverUse WHERE SeasonID = " + SeasonID + " AND RaceID = " + RaceID + " AND DriverID = " + row.DriverID;
+      sqlite.db.each(sql, function(err, row) {
+        if (err) {
+          return reject(err);
+        }
+
+        addUserPoints(row.UserID, RaceID, SeasonID, 11);
+      });
+    });
+  });
+}
+
+function addRace9thPlacePoints(SeasonID, RaceID) {
+  return new Promise(function(resolve, reject) {
+    var sql = "SELECT * FROM RaceResults WHERE SeasonID = " + SeasonID + " AND RaceID = " + RaceID + " AND Position = 9";
+    sqlite.db.get(sql, function(err, row) {
+      if (err) {
+        return reject(err);
+      } else if (row === undefined) {
+        return reject("cant find 9th place race finish");
+      }
+
+      sql = "SELECT * FROM UserSeasonDriverUse WHERE SeasonID = " + SeasonID + " AND RaceID = " + RaceID + " AND DriverID = " + row.DriverID;
+      sqlite.db.each(sql, function(err, row) {
+        if (err) {
+          return reject(err);
+        }
+
+        addUserPoints(row.UserID, RaceID, SeasonID, 12);
+      });
+    });
+  });
+}
+
+function addRace10thPlacePoints(SeasonID, RaceID) {
+  return new Promise(function(resolve, reject) {
+    var sql = "SELECT * FROM RaceResults WHERE SeasonID = " + SeasonID + " AND RaceID = " + RaceID + " AND Position = 10";
+    sqlite.db.get(sql, function(err, row) {
+      if (err) {
+        return reject(err);
+      } else if (row === undefined) {
+        return reject("cant find 10th place race finish");
+      }
+
+      sql = "SELECT * FROM UserSeasonDriverUse WHERE SeasonID = " + SeasonID + " AND RaceID = " + RaceID + " AND DriverID = " + row.DriverID;
+      sqlite.db.each(sql, function(err, row) {
+        if (err) {
+          return reject(err);
+        }
+
+        addUserPoints(row.UserID, RaceID, SeasonID, 13);
+      });
+    });
+  });
+}
+
+function addUserPoints(UserID, RaceID, SeasonID , ScoreID) {
+  return new Promise(function(resolve, reject) {
+    var sqlString = "INSERT INTO UserPoints VALUES (?, ?, ?, ?)";
+    var stmt = sqlite.db.prepare(sqlString);
+    var argumentArray = [SeasonID,
+      UserID,
+      RaceID,
+      ScoreID];
+    stmt.run(argumentArray, function(err) {
+      if (err) {
+        return reject(err);
+      }
+
+      return resolve("success");
     });
   });
 }

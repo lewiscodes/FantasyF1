@@ -1,1 +1,1 @@
-CREATE TABLE QualifyingResults (RaceID INT, DriverID INT, Position INT);
+CREATE TABLE QualifyingResults (SeasonID INT, RaceID INT, DriverID INT, Position INT);
