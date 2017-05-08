@@ -670,7 +670,7 @@ function processQualifyingPoints(RaceID, SeasonID) {
         .then(function(success) {
           return resolve(success);
         })
-        .catch(functin(fail) {
+        .catch(function(fail) {
           return reject(fail);
         });
     });
@@ -746,6 +746,7 @@ function addQualifyingBeatTeammatePoints(SeasonID, RaceID, DriverID, DriverPosit
               }
 
               addUserPoints(row.UserID, RaceID, 1);
+            });
           } else {
             var sql = "SELECT * FROM UserSeasonDriverUse WHERE SeasonID = " + row.SeasonID + " AND RaceID = " + row.RaceID + " AND DriverID = " + row.DriverID;
             sqlite.db.each(sql, function(err, row) {
@@ -754,6 +755,7 @@ function addQualifyingBeatTeammatePoints(SeasonID, RaceID, DriverID, DriverPosit
               }
 
               addUserPoints(row.UserID, RaceID, 1);
+            });
           }
         });
       });
@@ -780,6 +782,7 @@ function addRaceBeatTeammatePoints(SeasonID, RaceID, DriverID, DriverPosition) {
               }
 
               addUserPoints(row.UserID, RaceID, 2);
+            });
           } else {
             var sql = "SELECT * FROM UserSeasonDriverUse WHERE SeasonID = " + row.SeasonID + " AND RaceID = " + row.RaceID + " AND DriverID = " + row.DriverID;
             sqlite.db.each(sql, function(err, row) {
@@ -788,6 +791,7 @@ function addRaceBeatTeammatePoints(SeasonID, RaceID, DriverID, DriverPosition) {
               }
 
               addUserPoints(row.UserID, RaceID, 2);
+            });
           }
         });
       });
