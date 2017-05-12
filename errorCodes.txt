@@ -31,4 +31,8 @@
     "code" : "6",
     "status" : "Fantasy Pick Added"
   },
+  {
+    "code" : "7",
+    "status" : "No Picks in DB"
+  },
 }
