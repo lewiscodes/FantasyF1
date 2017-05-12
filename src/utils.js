@@ -94,6 +94,6 @@ module.exports.getDriverTeammateFromDriverIDAndSeasonForRaceID = function(Driver
   });
 }
 
-module.exports.online = false;
+module.exports.online = true;
 module.exports.ProcessNextRace = true;
 module.exports.debug = false;

@@ -1,1 +1,1 @@
-CREATE TABLE UserSeasonDriverUse (SeasonID INT, UserID INT, DriverID INT, RaceID INT)
+CREATE TABLE UserSeasonDriverUse (PickID INTEGER PRIMARY KEY AUTOINCREMENT, SeasonID INT, UserID INT, DriverID INT, RaceID INT)

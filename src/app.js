@@ -74,10 +74,10 @@ function executeOngoing() {
     utils.getDateTime("Started getQualiResults");
     return ongoing.getQualiResults();
   })
-  // .then(function() {
-  //   utils.getDateTime("Started processPoints");
-  //   return ongoing.processPoints();
-  // })
+  .then(function() {
+    utils.getDateTime("Started processPoints");
+    return ongoing.processPoints();
+  })
   .catch(function(fail) {
     console.log(fail);
   });
