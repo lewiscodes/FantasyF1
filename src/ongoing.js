@@ -341,24 +341,24 @@ module.exports.getRaceResults = function() {
 
 module.exports.processPoints = function() {
   return new Promise(function(resolve, reject) {
-    var sql = "SELECT count(*) FROM UserSeasonDriverUse"
+    var sql = "SELECT count(*) as 'count' FROM UserSeasonDriverUse"
     sqlite.db.get(sql, function(err, row) {
       if (row.count == '0') {
         return reject("7");
-      }
-    });
-    //sql = "SELECT RaceID, SeasonID FROM Races WHERE QualifyingGot = 1 AND RaceGot = 1 AND QualifyingProcessed = 0 AND RaceProcessed = 0 LIMIT 1";
-    sql = "SELECT RaceID, SeasonID FROM Races WHERE QualifyingGot = 1 AND RaceGot = 1 AND QualifyingProcessed = 0 LIMIT 1";
-    sqlite.db.get(sql, function(err, row) {
-      if (err) {
-        return reject(err);
-      } else if (row === undefined) {
-        return resolve("no races to process");
-      }
+      } else {
+        sql = "SELECT RaceID, SeasonID FROM Races WHERE QualifyingGot = 1 AND RaceGot = 1 AND QualifyingProcessed = 0 AND RaceProcessed = 0 LIMIT 1";
+        sqlite.db.get(sql, function(err, row) {
+          if (err) {
+            return reject(err);
+          } else if (row === undefined) {
+            return resolve("no races to process");
+          }
 
-      processQualifyingPoints(row.RaceID, row.SeasonID);
-      markQualiAsProcessed(row.RaceID);
-      // processRacePoints(row.RaceID, row.SeasonID);
+          processQualifyingPoints(row.RaceID, row.SeasonID);
+          markQualiAsProcessed(row.RaceID);
+          // processRacePoints(row.RaceID, row.SeasonID);
+        });
+      }
     });
   });
 }
@@ -669,7 +669,6 @@ function addRaceFastestLap(SeasonID, Round, driverRef) {
 function processQualifyingPoints(RaceID, SeasonID) {
   return new Promise(function(resolve, reject) {
     var sql = "SELECT QR.RaceID, QR.DriverID, QR.Position, R.SeasonID FROM QualifyingResults QR INNER JOIN Races R ON QR.RaceID = R.RaceID WHERE QR.RaceID = " + RaceID + " AND R.SeasonID = " + SeasonID;
-    // var sql = "SELECT QR.RaceID, QR.DriverID, QR.Position, R.SeasonID FROM QualifyingResults QR INNER JOIN Races R ON QR.RaceID = R.RaceID WHERE QR.RaceID = 1 AND R.SeasonID = 2016";
     sqlite.db.each(sql, function(err, row) {
       if (err) {
         return reject(err);
@@ -755,42 +754,9 @@ function addQualifyingBeatTeammatePoints(SeasonID, RaceID, DriverID, DriverPosit
               if (err) {
                 return reject(err);
               }
-
-              console.log("-----------1-------------");
-              console.log("userID : ", row.UserID);
-              console.log("SeasonID : ", SeasonID);
-              console.log("RaceID : ", RaceID);
-              console.log("DriverID : ", DriverID);
-              console.log("DriverPosition : ", DriverPosition);
-              console.log("TeamMateID : ", TeamMateDriverID);
-              console.log("TeamMatePosition : ", teamMatePOsition);
-              console.log("PickID : ", row.PickID);
-              console.log("------------------------");
-
               addUserPoints(row.UserID, RaceID, SeasonID, 1, row.PickID);
             });
-          } 
-          // else {
-          //   var sql = "SELECT * FROM UserSeasonDriverUse WHERE SeasonID = " + row.SeasonID + " AND RaceID = " + row.RaceID + " AND DriverID = " + row.DriverID;
-          //   sqlite.db.each(sql, function(err, row) {
-          //     if (err) {
-          //       return reject(err);
-          //     }
-          // 
-          //     console.log("---------2---------------");
-          //     console.log("userID : ", row.UserID);
-          //     console.log("SeasonID : ", SeasonID);
-          //     console.log("RaceID : ", RaceID);
-          //     console.log("DriverID : ", DriverID);
-          //     console.log("DriverPosition : ", DriverPosition);
-          //     console.log("TeamMateID : ", TeamMateDriverID);
-          //     console.log("TeamMatePosition : ", teamMatePOsition);
-          //     console.log("PickID : ", row.PickID);
-          //     console.log("------------------------");
-          // 
-          //     addUserPoints(row.UserID, RaceID, SeasonID, 1, row.PickID);
-          //   });
-          // }
+          }
         });
       });
   });
