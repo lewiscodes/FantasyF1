@@ -1,0 +1,128 @@
+@import '../../sass/standard.scss';
+
+.button {
+  margin: 5px 5px;
+  padding: 5px 5px;
+  text-align: center;
+  display: inline-block;
+  float: left;
+  clear: both;
+  
+  &__text {
+    font-weight: bold;
+    font-size: 30px;
+    display: inline-block;
+    margin-top: 6px;
+  }
+  
+  &--style {
+    &-floating, &-raised {
+      color: white;
+      
+      &.button--style {
+        &-red {
+          background-color: $red;
+          
+          &:hover {
+            background-color: darken($red, 5%);
+          }
+          
+          &:active {
+            background-color: darken($red, 10%);
+          }
+        }
+        
+        &-amber {
+          background-color: $amber;
+          
+          &:hover {
+            background-color: darken($amber, 5%);
+          }
+          
+          &:active {
+            background-color: darken($amber, 10%);
+          }
+        }
+        
+        &-green {
+          background-color: $green;
+          
+          &:hover {
+            background-color: darken($green, 5%);
+          }
+          
+          &:active {
+            background-color: darken($green, 10%);
+          }
+        }
+      }
+    }
+    
+    &-raised, &-flat {
+      border-radius: 2px;
+      height: 50px;
+      width: 500px;
+    }
+    
+    &-floating {
+      width: 50px;
+      height: 50px;
+      border-radius: 100%;
+    }
+    
+    &-raised {
+      
+    }
+    
+    &-flat {
+      border: 3px solid white;
+      
+      &.button--style {
+        &-red {
+          border-color: $red;
+          color: $red;
+          
+          &:hover {
+            border-color: darken($red, 5%);
+            color: darken($red, 5%);
+          }
+          
+          &:active {
+            border-color: darken($red, 10%);
+            color: darken($red, 10%);
+          }
+        }
+        
+        &-amber {
+          border-color: $amber;
+          color: $amber;
+          
+          &:hover {
+            border-color: darken($amber, 5%);
+            color: darken($amber, 5%);
+          }
+          
+          &:active {
+            border-color: darken($amber, 10%);
+            color: darken($amber, 10%);
+          }
+        }
+        
+        &-green {
+          border-color: $green;
+          color: $green;
+          
+          &:hover {
+            border-color: darken($green, 10%);
+            color: darken($green, 5%);
+          }
+          
+          &:active {
+            border-color: darken($green, 10%);
+            color: darken($green, 10%);
+          }
+        }
+      }
+    }
+  }
+}
