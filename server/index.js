@@ -30,9 +30,13 @@ app.post('/api/createuser', function(req, res) {
 });
 
 app.post('/api/login',function(req,res){
+  console.log(req.body.email, req.body.pin);
   api.login(req.body.email, req.body.pin)
-  .then(function(success) {res.send(success)})
-  .catch(function(fail) {res.send(fail)})
+  .then(function(success) {
+    console.log(success);
+    res.sendStatus(success)
+  })
+  .catch(function(fail) {res.sendStatus(fail)})
 });
 
 app.get('/api/getNextRace', function (req, res) {

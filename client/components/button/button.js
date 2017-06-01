@@ -8,15 +8,19 @@ export default class Button extends Component {
       style,
       color
     } = this.props;
-    
+
     const className = cx({
         'button': true,
-        [`button--style-${style}`]: style !== undefined,
-        [`button--style-${color}`]: color !== undefined
+        [`button--style-${style}`]: style !== undefined
     });
-    
+
+    const buttonColor = {
+      backgroundColor: this.props.backgroundColor,
+      color: this.props.color
+    }
+
     return (
-      <div className={className}>
+      <div className={className} style={buttonColor} onClick={this.props.onClickFunction}>
         <span className="button__text">{this.props.text}</span>
       </div>
     )
@@ -24,6 +28,5 @@ export default class Button extends Component {
 }
 
 Button.propTypes = {
-    style: PropTypes.oneOf(['floating', 'raised', 'flat']),
-    color: PropTypes.oneOf(['red', 'amber', 'green'])
+    style: PropTypes.oneOf(['floating', 'raised', 'flat'])
 };
