@@ -1,8 +1,43 @@
+import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
-import Button from './button';
+import { bindActionCreators } from 'redux';
+import cx from 'classnames';
+import ButtonComponent from './button';
+require('./sass/button.scss');
 
-const mapStateToProps = state => {
-    return {};
+class Button extends Component {
+  render () {
+    const classes = cx({
+        'button': true,
+        [`button--style-${this.props.style}`]: this.props.style !== undefined
+    });
+    
+    const buttonColor = {
+      backgroundColor: this.props.backgroundColor,
+      color: this.props.color
+    }
+    
+    return (
+      <ButtonComponent
+        text={this.props.text}
+        buttonColor={buttonColor}
+        classes={classes}
+        onClickFunction={this.props.onClickFunction}
+      />
+    )
+  }
+}
+
+Button.propTypes = {
+    style: PropTypes.oneOf(['floating', 'raised', 'flat'])
 };
+
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators({  }, dispatch)
+}
+
+function mapStateToProps(state) {
+  return {  }
+}
 
 export default connect(mapStateToProps)(Button);

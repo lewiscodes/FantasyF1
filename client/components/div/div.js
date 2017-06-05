@@ -1,26 +1,9 @@
-import React, { Component, PropTypes } from 'react'
-import cx from 'classnames';
-require('./sass/div.scss');
+import React, { Component } from 'react'
 
-export default class Div extends Component {
-  render() {
-    const {
-      style
-    } = this.props;
-    
-    const className = cx({
-        'div': true,
-        [`div--style-${style}`]: style !== undefined
-    });
-    
-    return (
-      <div className={className}>
-        <span className="div__text">{this.props.text}</span>
-      </div>
-    )
-  }
+export default (props) => {
+  return (
+    <div className={props.classes}>
+      <span className="div__text">{props.text}</span>
+    </div>
+  );
 }
-
-Div.propTypes = {
-    style: PropTypes.oneOf(['standard', 'secondary'])
-};

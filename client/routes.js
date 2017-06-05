@@ -2,14 +2,14 @@ import React from 'react';
 import { Route, IndexRoute } from 'react-router';
 
 import App from './components/app';
-import Logon from './components/logon/container';
-import ForgottenPassword from './components/forgottenPassword/container';
-import Register from './components/register/container';
+import Main from './containers/main'
+import Logon from './containers/logon';
+// import ForgottenPassword from './containers/forgottenPassword';
+// import Register from './containers/register';
 
 export default (
-  <Route path="/" component={Logon} >
-    <Route path="logon" component={Logon} />
-    <Route path="password" component={ForgottenPassword} />
-    <Route path="register" component={Register} />
+  <Route path="/" component={App} >
+    <IndexRoute component={Logon} />
+      <Route path="logon" component={Logon} />
   </Route>
 );

@@ -1,16 +1,16 @@
-import React, { Component, PropTypes } from 'react'
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import cx from 'classnames';
-import { getLogon } from '../../actions/index';
+import { bindActionCreators } from 'redux';
+import { getLogon } from '../actions/index';
+import Button from '../components/button/container';
 require('./sass/logon.scss');
 
-import Button from '../button/container';
-var Background1 = './assets/background1.jpg'
-
-export default class Logon extends Component {
-
+class Logon extends Component {
+  
   loginFunction = () => {
     console.log("login attempted");
-    getLogon("lewis","1234");
+    this.props.getLogon("lewis","1234");
   }
 
   registerFunction = () => {
@@ -20,22 +20,19 @@ export default class Logon extends Component {
   forgottenPasswordFunction = () => {
     console.log("forgotten password form");
   }
-
+  
   render() {
-    const {
-      style
-    } = this.props;
 
     const className = cx({
         'logon': true,
-        [`logon--style-${style}`]: style !== undefined
+        [`logon--style-${this.props.style}`]: this.props.style !== undefined
     });
 
     let randomNumber = Math.floor(Math.random() * 4) + 1;
     const background = {
       backgroundImage: "url(./assets/background" + randomNumber + ".jpg)"
     }
-
+    
     return (
       <div className={className}>
         <div className="logon__wrapper">
@@ -65,4 +62,12 @@ export default class Logon extends Component {
   }
 }
 
-Logon.propTypes = {};
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators({ getLogon }, dispatch)
+}
+
+function mapStateToProps(state) {
+  return {  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Logon);

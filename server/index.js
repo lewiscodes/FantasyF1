@@ -51,6 +51,10 @@ app.post('/api/addFantasyPick', function(req, res) {
   .catch(function(fail) {res.send(fail)})
 });
 
+app.get('/server/api', function(req, res) {
+  res.send('[{"div" : "This is div number 1"},{"div" : "This is div number 2"}]');
+});
+
 app.listen(port, function(err) {
   console.log('running server on port: ' + port);
 });
