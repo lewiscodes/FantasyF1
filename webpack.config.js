@@ -4,7 +4,6 @@ module.exports = {
   entry: [
     'whatwg-fetch',
     'webpack/hot/dev-server',
-    'webpack-hot-middleware/client',
     './client/index.js'
   ],
   output: {
