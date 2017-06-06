@@ -14,12 +14,12 @@ module.exports.createUser = function(email, pin) {
           pin];
         stmt.run(argumentArray, function(err) {
           if (err) {
-            return reject("2");
+            return reject({"error":"2"});
           }
-          return resolve("100");
+          return resolve({"success":"100"});
         });
       } else {
-        return reject("1");
+        return reject({"error":"1"});
       }
     });
   });
@@ -27,12 +27,12 @@ module.exports.createUser = function(email, pin) {
 
 module.exports.login = function(email, pin) {
   return new Promise(function(resolve, reject) {
-    var sqlScript = "SELECT * FROM Users WHERE emailAddress = '" + email + "' AND pin = '" + pin + "'";
+    var sqlScript = "SELECT UserID FROM Users WHERE emailAddress = '" + email + "' AND pin = '" + pin + "'";
     sqlite.db.get(sqlScript, function(err, row) {
       if (err || row === undefined) {
-        return reject("3");
+        return reject({"error":"3"});
       }
-      return resolve(row.UserID);
+      return resolve(row);
     });
   });
 }
@@ -42,7 +42,7 @@ module.exports.getNextRace = function() {
     var sqlScript = "SELECT * FROM Races R INNER JOIN Races_All RA ON R.RaceID = RA.RaceID WHERE R.RaceDate > Date('now') ORDER BY R.RaceDate ASC LIMIT 1";
     sqlite.db.get(sqlScript, function(err, row) {
       if (err || row === undefined) {
-        return reject("4");
+        return reject({"error":"4"});
       }
       return resolve(row);
     });
@@ -56,11 +56,11 @@ module.exports.addFantasyPick = function(SeasonID, UserID, DriverID, RaceID) {
         if (parseInt(success.count) < 3) {
           addUserSeasonDriverUse(SeasonID, UserID, DriverID, RaceID)
             .then(function(success) {
-              return resolve("6");
+              return resolve({"success":"6"});
             })
             .catch(function(fail) {return reject(fail)});
         } else {
-          return reject("5");
+          return reject({"error":"5"});
         }
       })
       .catch(function(fail) {return reject(fail)});
@@ -72,7 +72,7 @@ function checkUserDriverAllowance(SeasonID, UserID, DriverID) {
     var sqlScript = "SELECT COUNT(*) as 'count' FROM UserSeasonDriverUse WHERE SeasonID = '" + SeasonID +"' AND UserID = '" + UserID + "' AND DriverID = '" + DriverID +"'";
     sqlite.db.get(sqlScript, function(err, row) {
       if (err || row === undefined) {
-        return reject("2");
+        return reject({"error":"2"});
       }
       return resolve(row);
     });
@@ -90,9 +90,9 @@ function addUserSeasonDriverUse(SeasonID, UserID, DriverID, RaceID) {
     ];
     stmt.run(argumentArray, function(err) {
       if (err) {
-        return reject("2");
+        return reject({"error":"2"});
       }
-      return resolve("100");
+      return resolve({"success":"100"});
     });
   });
 }

@@ -30,13 +30,9 @@ app.post('/api/createuser', function(req, res) {
 });
 
 app.post('/api/login',function(req,res){
-  console.log(req.body.email, req.body.pin);
   api.login(req.body.email, req.body.pin)
-  .then(function(success) {
-    console.log(success);
-    res.sendStatus(success)
-  })
-  .catch(function(fail) {res.sendStatus(fail)})
+  .then(function(success) {res.send(success)})
+  .catch(function(fail) {res.send(fail)});
 });
 
 app.get('/api/getNextRace', function (req, res) {
@@ -49,10 +45,6 @@ app.post('/api/addFantasyPick', function(req, res) {
   api.addFantasyPick(req.body.SeasonID, req.body.UserID, req.body.DriverID, req.body.RaceID)
   .then(function(success) {res.send(success)})
   .catch(function(fail) {res.send(fail)})
-});
-
-app.get('/server/api', function(req, res) {
-  res.send('[{"div" : "This is div number 1"},{"div" : "This is div number 2"}]');
 });
 
 app.listen(port, function(err) {

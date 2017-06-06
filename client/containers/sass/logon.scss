@@ -41,13 +41,19 @@
       color: #ecf0f1;
       font-size: 70px;
       padding: 25px 50px;
-
+    }
+    
+    .logonFailed {
+      color: red;
+      font-size: 50px;
+      text-align: center;
+      margin: 25px;
     }
 
     form {
       background-color: #fffffe;
       box-shadow: 3px 3px 5px 6px #ccc;
-      margin: 50px 50px;
+      margin: 0 50px;
       margin-bottom: 10px;
       padding: 50px 50px;
 

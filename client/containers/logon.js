@@ -9,8 +9,9 @@ require('./sass/logon.scss');
 class Logon extends Component {
   
   loginFunction = () => {
-    console.log("login attempted");
-    this.props.getLogon("lewis","1234");
+    const username = document.getElementsByClassName("logon__username")[0].value;
+    const password = document.getElementsByClassName("logon__password")[0].value;
+    this.props.getLogon(username, password);
   }
 
   registerFunction = () => {
@@ -19,6 +20,12 @@ class Logon extends Component {
 
   forgottenPasswordFunction = () => {
     console.log("forgotten password form");
+  }
+  
+  handleReturn = (event) => {
+    if (event.key === 'Enter') {
+      this.loginFunction();
+    }
   }
   
   render() {
@@ -33,6 +40,11 @@ class Logon extends Component {
       backgroundImage: "url(./assets/background" + randomNumber + ".jpg)"
     }
     
+    let logonFailed = {visibility:"hidden"};
+    if (this.props.logon.logonError) {
+      logonFailed = {visibility:"visible"}
+    }
+    
     return (
       <div className={className}>
         <div className="logon__wrapper">
@@ -45,12 +57,13 @@ class Logon extends Component {
             </div>
           </div>
           <div className="subHeader">Login or Register.</div>
+          <div className="logonFailed" style={logonFailed}>Logon Failed. Please try again.</div>
           <form>
             <div className="inputs">
               <label>User name</label>
-              <input type="text" className="logon__username"/>
+              <input type="text" className="logon__username" onKeyUp={this.handleReturn}/>
               <label>Password</label>
-              <input type="password" className="logon__password"/>
+              <input type="password" className="logon__password" onKeyUp={this.handleReturn}/>
             </div>
             <Button style="raised" color="#ecf0f1" backgroundColor="#2c3e50" text="Log In" onClickFunction={this.loginFunction}/>
           </form>
@@ -67,7 +80,7 @@ function mapDispatchToProps(dispatch) {
 }
 
 function mapStateToProps(state) {
-  return {  }
+  return { logon: state.logonReducer }
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Logon);
