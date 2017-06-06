@@ -11,25 +11,28 @@ class Button extends Component {
         'button': true,
         [`button--style-${this.props.style}`]: this.props.style !== undefined
     });
-    
+
     const buttonColor = {
       backgroundColor: this.props.backgroundColor,
       color: this.props.color
     }
-    
+
     return (
       <ButtonComponent
         text={this.props.text}
         buttonColor={buttonColor}
         classes={classes}
         onClickFunction={this.props.onClickFunction}
+        isLink={this.props.isLink}
+        link={this.props.link}
       />
     )
   }
 }
 
 Button.propTypes = {
-    style: PropTypes.oneOf(['floating', 'raised', 'flat'])
+    style: PropTypes.oneOf(['floating', 'raised', 'flat']),
+    isLink: PropTypes.oneOf([true, false])
 };
 
 function mapDispatchToProps(dispatch) {
