@@ -19,6 +19,7 @@ app.use(webpackDevMiddleware(compiler, {
     stats: {colors: true}
 }));
 app.use(express.static(path.join(__dirname, '/dist')));
+app.use('/app/*', express.static(path.join(__dirname, '/dist')));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
