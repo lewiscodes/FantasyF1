@@ -68,7 +68,7 @@ class UserLogon extends Component {
             <Button style="raised" color="#ecf0f1" backgroundColor="#2c3e50" text="Log In" onClickFunction={this.loginFunction} isLink={false} />
           </form>
           <Button style="flat" color="#2c3e50" backgroundColor="#ecf0f1" text="register" isLink={true} link="register"/>
-          <Button style="flat" color="#2c3e50" backgroundColor="#ecf0f1" text="forgotten password" isLink={true} link="app/forgottenpassword/"/>
+          <Button style="flat" color="#2c3e50" backgroundColor="#ecf0f1" text="forgotten password" isLink={true} link="forgottenpassword/"/>
         </div>
       </div>
     )
