@@ -17,6 +17,7 @@ class UserLogon extends Component {
     
     return (
       <div className={className}>
+        <img className="logo" src="../assets/logo.svg"/>
         <Input text="USERNAME" inputType="text"/>
         <Input text="PASSWORD" inputType="password"/>
         <Button isLink={false} text="Sign In" style='wide' />

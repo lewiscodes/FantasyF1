@@ -17,6 +17,7 @@ class Register extends Component {
     
     return (
       <div className={className}>
+        <img className="logo" src="../assets/logo.svg"/>
         <Input text="USERNAME" inputType="text" />
         <Input text="EMAIL" inputType="text" />
         <Input text="PASSWORD" inputType="password" />

@@ -1,6 +1,10 @@
 body {
   background-color: black;
   font-family: 'Montserrat', 'sans-serif';
+  
+  .logo {
+    width: 100%;
+  }
 }
 
 @media (min-width: 641px) {

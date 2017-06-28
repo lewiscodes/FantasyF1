@@ -17,6 +17,7 @@ class ForgottenPassword extends Component {
     
     return (
       <div className={className}>
+        <img className="logo" src="../assets/logo.svg"/>
         <Input text="EMAIL" inputType="text"/>
         <Button isLink={false} text="Reset Password" style='wide' />
       </div>

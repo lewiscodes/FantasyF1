@@ -17,6 +17,7 @@ class LandingPage extends Component {
     return (
       <div className={className}>
         <div className="buttonContainer">
+          <img className="logo" src="./assets/logo.svg"/>
           <Button isLink={false} text="Register" style='narrow' />
           <Button isLink={false} text="Sign In" style='narrow' />
         </div>
