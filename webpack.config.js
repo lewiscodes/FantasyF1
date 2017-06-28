@@ -21,8 +21,12 @@ module.exports = {
         }
       },
       {
+        test: /\.jpe?g$|\.gif$|\.png$/i,
+        loader: "file-loader?name: img/[name].[ext]"
+      },
+      {
         test: /\.scss$/,
-        loaders: ['style', 'css', 'sass']
+        loaders: ['style', 'css', 'resolve-url', 'sass']
       }
     ]
   },
