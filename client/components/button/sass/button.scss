@@ -1,45 +1,30 @@
 @import '../../sass/standard.scss';
 
-a {
-  text-decoration: none;
-}
-
 .button {
+  font-size: 12px;
+  color: white;
   text-align: center;
-  width: 90%;
-  margin: auto;
-  cursor: pointer;
-
-  &__text {
-    font-weight: bold;
-    font-size: 70px;
-    display: block;
-    padding-top: 40px;
-  }
-
+  border: 1px solid white;
+  border-radius: 2px;
+  padding: 20px 0;
+  margin: 10px 5%;
+  
   &--style {
-    &-floating, &-raised {
-
+    &-narrow {
+      display: inline-block;
+      width: 35%;
     }
-
-    &-raised, &-flat {
-      border-radius: 20px;
-      height: 150px;
+    
+    &-wide {
       width: 90%;
     }
-
-    &-floating {
-      width: 50px;
-      height: 50px;
-      border-radius: 100%;
-    }
-
-    &-raised {
-
-    }
-
-    &-flat {
-
+  }
+  
+  &:hover {
+    .button__text {
+      border-bottom-width: 1px;
+      border-bottom-style: solid;
+      padding-bottom: 2px;
     }
   }
 }

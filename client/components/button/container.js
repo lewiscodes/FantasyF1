@@ -12,15 +12,9 @@ class Button extends Component {
         [`button--style-${this.props.style}`]: this.props.style !== undefined
     });
 
-    const buttonColor = {
-      backgroundColor: this.props.backgroundColor,
-      color: this.props.color
-    }
-
     return (
       <ButtonComponent
         text={this.props.text}
-        buttonColor={buttonColor}
         classes={classes}
         onClickFunction={this.props.onClickFunction}
         isLink={this.props.isLink}
@@ -31,7 +25,6 @@ class Button extends Component {
 }
 
 Button.propTypes = {
-    style: PropTypes.oneOf(['floating', 'raised', 'flat']),
     isLink: PropTypes.oneOf([true, false])
 };
 

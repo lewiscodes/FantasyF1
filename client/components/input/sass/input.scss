@@ -1,0 +1,38 @@
+@import '../../sass/standard.scss';
+
+.input {
+  font-size: 15px;
+  letter-spacing: 1px;
+  font-weight: bold;
+  margin: 20px 5%;
+  
+  span {
+    color: white;
+    display: block;
+    padding-left: 2px;
+  }
+  
+  input {
+    border: none;
+    border-bottom: 1px solid white;
+    color: white;
+    background: none;
+    padding: 10px;
+    padding-left: 2px;
+    width: 90%;
+    
+    &[type=text] {
+      font-size: 17px;
+      letter-spacing: 1px;
+    }
+    
+    &[type=password] {
+      font-size: 25px;
+      letter-spacing: 5px;
+    }
+    
+    &:focus {
+      outline: none;
+    }
+  }
+}
