@@ -1,0 +1,37 @@
+.checkbox {
+  text-align: center;
+
+  input[type="checkbox"] {
+    -webkit-appearance: none;
+    outline: none;
+    background-color: none;
+  	border: 2px solid white;
+  	padding: 10px;
+  	border-radius: 2px;
+  	display: inline-block;
+
+    &:checked {
+      background-image: url('../../../../server/dist/assets/tick.svg');
+      background-size: cover;
+      outline: none;
+    }
+  }
+
+  .text {
+    display: inline-block;
+    font-size: 12px;
+    padding-left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+
+    label {
+      color: white;
+    }
+
+    a {
+      color: white;
+      font-size: 14px;
+      font-weight: bold;
+    }
+  }
+}

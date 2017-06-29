@@ -6,20 +6,20 @@
   text-align: center;
   border: 1px solid white;
   border-radius: 2px;
-  padding: 20px 0;
+  padding: 15px 0;
   margin: 10px 5%;
-  
+
   &--style {
     &-narrow {
       display: inline-block;
       width: 35%;
     }
-    
+
     &-wide {
       width: 90%;
     }
   }
-  
+
   &:hover {
     .button__text {
       border-bottom-width: 1px;

@@ -13,13 +13,13 @@ class LandingPage extends Component {
         'landingPage': true,
         [`landingPage--style-${this.props.style}`]: this.props.style !== undefined
     });
-    
+
     return (
       <div className={className}>
+        <img className="logo" src="./assets/logo.svg"/>
         <div className="buttonContainer">
-          <img className="logo" src="./assets/logo.svg"/>
-          <Button isLink={false} text="Register" style='narrow' />
-          <Button isLink={false} text="Sign In" style='narrow' />
+          <Button isLink={true} link="/register" text="Register" style='narrow' />
+          <Button isLink={true} link="/login" text="Sign In" style='narrow' />
         </div>
       </div>
     )
