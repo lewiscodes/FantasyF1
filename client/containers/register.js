@@ -5,6 +5,7 @@ import { bindActionCreators } from 'redux';
 import Button from '../components/button/container';
 import Input from '../components/input/container'
 import Checkbox from '../components/checkbox/container';
+import Cta from '../components/cta/container';
 require('./sass/register.scss');
 
 class Register extends Component {
@@ -24,7 +25,10 @@ class Register extends Component {
         <Input text="PASSWORD" inputType="password" />
         <Input text="RE-TYPE PASSWORD" inputType="password" />
         <Button text="Register" style='wide'/>
-        <Checkbox text="I agree to the " link="/terms_and_conditions" linkText="Terms and Conditions."/>
+        <div className="termsAndConditions">
+          <Checkbox text="I agree to the " />
+          <Cta text="Terms and Conditions" link="/home"/>
+        </div>
       </div>
     )
   }

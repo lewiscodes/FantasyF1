@@ -2,26 +2,27 @@ import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import cx from 'classnames';
-import CheckboxComponent from './checkbox';
-require('./sass/checkbox.scss');
+import CtaComponent from './cta';
+require('./sass/cta.scss');
 
-class Checkbox extends Component {
+class Cta extends Component {
   render () {
     const classes = cx({
-        'checkbox': true,
-        [`checkbox--style-${this.props.style}`]: this.props.style !== undefined
+        'cta': true,
+        [`cta--style-${this.props.style}`]: this.props.style !== undefined
     });
 
     return (
-      <CheckboxComponent
+      <CtaComponent
         text={this.props.text}
         classes={classes}
+        link={this.props.link}
       />
     )
   }
 }
 
-Checkbox.propTypes = {};
+Cta.propTypes = {};
 
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({  }, dispatch)
@@ -31,4 +32,4 @@ function mapStateToProps(state) {
   return {  }
 }
 
-export default connect(mapStateToProps)(Checkbox);
+export default connect(mapStateToProps)(Cta);
