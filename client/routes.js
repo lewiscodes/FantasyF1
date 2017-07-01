@@ -13,6 +13,7 @@ export default (
     <IndexRoute component={LandingPage}/>
     <Route path="forgottenpassword" component={ForgottenPassword} />
     <Route path="register" component={Register} />
-    <Route path="login" component={UserLogon  } />
+    <Route path="login" component={UserLogon} />
+    <Route path="home" component={Home} />
   </Route>
 );

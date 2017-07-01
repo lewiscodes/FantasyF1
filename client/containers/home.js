@@ -7,7 +7,8 @@ require('./sass/home.scss');
 
 class Home extends Component {
   render () {
-    if (this.props.logon.userID !== null) {
+    // if (this.props.logon.userID !== null) {
+    if (true) {
       return (
         <div>HOME!</div>
       )

@@ -1,11 +1,14 @@
 @import '../../components/sass/standard.scss';
 
 body {
+  height: 100vh;
   background: linear-gradient(
     rgba(0, 0, 0, 0.7),
     rgba(0, 0, 0, 0.7)
   ), url('../../../server/dist/assets/mclaren_background.jpg');
   background-position: 25% 0%;
+  background-repeat: no-repeat;
+  background-color: black;
 }
 
 .register {
