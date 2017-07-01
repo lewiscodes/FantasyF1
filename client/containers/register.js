@@ -24,11 +24,11 @@ class Register extends Component {
         <Input text="EMAIL" inputType="text" />
         <Input text="PASSWORD" inputType="password" />
         <Input text="RE-TYPE PASSWORD" inputType="password" />
-        <Button text="Register" style='wide'/>
         <div className="termsAndConditions">
           <Checkbox text="I agree to the " />
           <Cta text="Terms and Conditions" link="/home"/>
         </div>
+        <Button text="Register" style='wide'/>
       </div>
     )
   }

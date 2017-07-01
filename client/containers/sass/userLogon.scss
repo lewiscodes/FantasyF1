@@ -7,7 +7,23 @@ body {
   ), url('../../../server/dist/assets/mclaren_background.jpg');
   background-position: 25% 0%;
 
-  .newUser {
-    color: white;
+  .form {
+    bottom: 0;
+    position: fixed;
+    width: 100%;
+
+    .cta {
+      margin: 10px;
+
+      &.cta--style-forgottenPassword {
+        display: block;
+        text-align: center;
+      }
+    }
+
+    .newUser {
+      color: white;
+      text-align: center;
+    }
   }
 }

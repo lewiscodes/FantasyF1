@@ -19,13 +19,15 @@ class UserLogon extends Component {
     return (
       <div className={className}>
         <img className="logo" src="../assets/logo.svg"/>
-        <Input text="USERNAME" inputType="text"/>
-        <Input text="PASSWORD" inputType="password"/>
-        <Button isLink={false} text="Sign In" style='wide' />
-        <Cta text="Forgot password?" link="/forgottenpassword"/>
-        <div className="newUser">
-          <label>New user?</label>
-          <Cta text="Register here." link="/register"/>
+        <div className="form">
+          <Input text="USERNAME" inputType="text"/>
+          <Input text="PASSWORD" inputType="password"/>
+          <Button isLink={false} text="Sign In" style='wide' />
+          <Cta text="Forgot password?" link="/forgottenpassword" style="forgottenPassword"/>
+          <div className="newUser">
+            <label>New user?</label>
+            <Cta text="Register here." link="/register"/>
+          </div>
         </div>
       </div>
     )

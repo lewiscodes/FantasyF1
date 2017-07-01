@@ -7,19 +7,21 @@ import Input from '../components/input/container'
 require('./sass/forgottenpassword.scss');
 
 class ForgottenPassword extends Component {
-  
+
   render() {
-    
+
     const className = cx({
         'forgottenpassword': true,
         [`forgottenpassword--style-${this.props.style}`]: this.props.style !== undefined
     });
-    
+
     return (
       <div className={className}>
         <img className="logo" src="../assets/logo.svg"/>
-        <Input text="EMAIL" inputType="text"/>
-        <Button isLink={false} text="Reset Password" style='wide' />
+        <div className="form">
+          <Input text="EMAIL" inputType="text"/>
+          <Button isLink={false} text="Reset Password" style='wide' />
+        </div>
       </div>
     )
   }

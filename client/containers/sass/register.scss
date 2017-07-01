@@ -9,7 +9,17 @@ body {
 }
 
 .register {
+  height: 100vh;
+  max-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+
+  .input {
+    margin-bottom: 0;
+  }
   .termsAndConditions {
     text-align: center;
+    margin-top: 10px;
   }
 }
